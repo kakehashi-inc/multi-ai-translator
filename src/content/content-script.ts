@@ -70,7 +70,7 @@ async function handleMessage(request: ContentRequest) {
       return { success: true };
 
     case 'restore-original':
-      translator.restoreOriginal();
+      await translator.restoreOriginal();
       return { success: true };
 
     case 'has-selection': {

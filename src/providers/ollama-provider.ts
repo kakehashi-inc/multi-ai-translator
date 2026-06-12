@@ -50,7 +50,8 @@ export class OllamaProvider extends BaseProvider<OllamaProviderConfig, Ollama> {
   async translate(
     texts: string[],
     targetLanguage: string,
-    sourceLanguage = 'auto'
+    sourceLanguage = 'auto',
+    signal?: AbortSignal
   ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Ollama configuration');
@@ -70,24 +71,55 @@ export class OllamaProvider extends BaseProvider<OllamaProviderConfig, Ollama> {
       const model = this.config.model;
       const client = this.client;
 
-      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
-        // Use the chat endpoint (not generate) so Ollama applies the model's
-        // chat template. Chat models such as Hy-MT2 rely on their template to
-        // wrap the message in role markers; with the raw `generate` endpoint the
-        // template boundaries break down and the model leaks its special tokens
-        // (e.g. "hy_User", "hy-Assistant", "hy_End__of__sentence") into the
-        // output or degenerates into repetition.
-        const response = await client.chat({
-          model,
-          messages: [{ role: 'user', content: prompt }],
-          stream: false,
-          options: {
-            temperature: this.config.temperature ?? ConstVariables.DEFAULT_OLLAMA_TEMPERATURE
-          }
-        });
+      // The ollama SDK does not accept a per-request AbortSignal, but it exposes
+      // `client.abort()` which aborts every request in flight on this client.
+      // Each batch builds a fresh provider (and thus a fresh client), so a single
+      // in-flight request per client makes this effectively per-batch. Wire the
+      // signal to it so a cancel tears down the open socket immediately instead
+      // of waiting for the local model to finish generating.
+      const onAbort = () => {
+        try {
+          client.abort();
+        } catch (error) {
+          console.warn('[ollama] Failed to abort in-flight request', error);
+        }
+      };
+      if (signal) {
+        if (signal.aborted) {
+          onAbort();
+        } else {
+          signal.addEventListener('abort', onAbort, { once: true });
+        }
+      }
 
-        return response.message.content.trim();
-      });
+      try {
+        return await this.runTranslation(
+          texts,
+          targetLanguage,
+          sourceLanguage,
+          async (prompt) => {
+            // Use the chat endpoint (not generate) so Ollama applies the model's
+            // chat template. Chat models such as Hy-MT2 rely on their template to
+            // wrap the message in role markers; with the raw `generate` endpoint the
+            // template boundaries break down and the model leaks its special tokens
+            // (e.g. "hy_User", "hy-Assistant", "hy_End__of__sentence") into the
+            // output or degenerates into repetition.
+            const response = await client.chat({
+              model,
+              messages: [{ role: 'user', content: prompt }],
+              stream: false,
+              options: {
+                temperature: this.config.temperature ?? ConstVariables.DEFAULT_OLLAMA_TEMPERATURE
+              }
+            });
+
+            return response.message.content.trim();
+          },
+          signal
+        );
+      } finally {
+        signal?.removeEventListener('abort', onAbort);
+      }
     });
   }
 

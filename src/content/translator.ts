@@ -48,7 +48,7 @@ type TranslateMessageResponse =
 
 type DispatchMode = 'block' | 'single';
 
-type TranslationPlanMessageResponse =
+type BeginTranslationMessageResponse =
   | { success: true; provider: string; model: string | null; dispatch: DispatchMode }
   | { success: false; error: string };
 
@@ -60,6 +60,23 @@ export class Translator {
   private settings: Settings | null = null;
   private cancelRequested = false;
   private selectionInProgress = false;
+  // The job id of the page translation currently running, if any. Sent with
+  // every batch so the background worker can use the right settings snapshot and
+  // abort the in-flight request when this job is cancelled.
+  private currentJobId: string | null = null;
+
+  /**
+   * Generate a unique id for a translation job. Uses crypto.randomUUID where
+   * available (all target browsers), with a timestamp-free fallback.
+   */
+  private createJobId(): string {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    // Fallback: random-only (no Date) id. Collisions are irrelevant in practice
+    // because only a handful of jobs ever coexist per tab.
+    return `job-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+  }
 
   /**
    * Initialize translator
@@ -90,15 +107,23 @@ export class Translator {
     providerName: string | null = null,
     sourceLanguage: string | null = null
   ): Promise<void> {
+    // Re-translate while a translation is already running: cancel the existing
+    // job (aborting its in-flight request) and restore the page before starting
+    // fresh. This is the user's intent when they press Translate again.
     if (this.isTranslating) {
-      console.warn('[Translator] Translation already in progress');
-      return;
+      updateTranslationStatus(getMessage('statusCancellingPrevious'), 'info');
+      await this.cancelCurrentJob();
+      restoreOriginalContent();
+      clearAllLoadingIndicators();
+      this.isTranslating = false;
     }
 
     this.isTranslating = true;
     this.cancelRequested = false;
 
     updateTranslationStatus(getMessage('statusScanning'));
+    // The job id for THIS translation run. Declared here so `finally` can end it.
+    let jobId: string | null = null;
     try {
       const settings = await this.ensureSettings();
 
@@ -121,12 +146,22 @@ export class Translator {
       const totalGroups = textGroups.length;
       updateTranslationStatus(getMessage('statusFoundBlocks', [totalGroups.toString()]));
 
-      // Resolve the dispatch mode up front. In 'single' mode the provider sends
-      // one request per text, so we build one-group-per-batch (maxItems = 1, no
-      // char cap) to keep the progress counter advancing per group instead of
-      // freezing for the whole chunk. In 'block' mode we use the configured
-      // batch sizes. If the plan cannot be resolved we fall back to block.
-      const plan = await this.getTranslationPlan(provider);
+      // Open the job. This both (a) captures the settings snapshot + creates the
+      // AbortController in the background worker so the whole page translates
+      // with the config it started with and can be cancelled, and (b) returns
+      // the resolved provider/model/dispatch so we can size batches.
+      //
+      // Dispatch mode: in 'single' mode the provider sends one request per text,
+      // so we build one-group-per-batch (maxItems = 1, no char cap) to keep the
+      // progress counter advancing per group instead of freezing for the whole
+      // chunk. In 'block' mode we use the configured batch sizes. If the job
+      // cannot be opened we fall back to block batching.
+      jobId = this.createJobId();
+      this.currentJobId = jobId;
+      const plan = await this.beginJob(jobId, provider, target, source);
+      if (plan?.success === false) {
+        throw new Error(plan.error || getMessage('errorTranslationFailed'));
+      }
       const isSingleDispatch = plan?.success === true && plan.dispatch === 'single';
 
       const maxChars = isSingleDispatch
@@ -175,7 +210,17 @@ export class Translator {
             getMessage('statusTranslating', [batchNumber.toString(), maxBatchNumber.toString()])
           );
 
-          const result = await this.translateBatch(batchTexts, target, source, provider);
+          const result = await this.translateBatch(batchTexts, target, source, provider, jobId);
+
+          // A cancel (explicit, tab close, navigate, or re-translate) aborts the
+          // in-flight request; the worker reports it via cancelRequested or a
+          // failed result. Either way, stop quietly without recording an error.
+          if (this.cancelRequested) {
+            batchEntries.forEach((entry) => {
+              hideLoadingIndicator(entry.group.parent);
+            });
+            return 0;
+          }
 
           if (!result?.success) {
             throw new Error(result?.error || getMessage('errorTranslationFailed'));
@@ -335,6 +380,14 @@ export class Translator {
       // Clear errors array to free memory
       errors.length = 0;
     } finally {
+      // Tear down the job in the background worker. If it was cancelled this is a
+      // no-op (already disposed); otherwise it frees the controller/snapshot.
+      if (jobId) {
+        await this.endJob(jobId);
+        if (this.currentJobId === jobId) {
+          this.currentJobId = null;
+        }
+      }
       this.isTranslating = false;
       this.cancelRequested = false;
       clearAllLoadingIndicators();
@@ -387,30 +440,74 @@ export class Translator {
   }
 
   /**
-   * Restore original content
+   * Restore original content and cancel any running page translation.
+   *
+   * Setting `cancelRequested` stops the content-side batch loop; sending
+   * 'cancel-translation' to the background worker aborts the request that is
+   * currently in flight (so the provider call stops immediately rather than
+   * finishing in the background). Returns a promise so callers can await the
+   * cancel before starting a new translation.
    */
-  restoreOriginal(): void {
+  async restoreOriginal(): Promise<void> {
     this.cancelRequested = true;
     this.isTranslating = false;
+    await this.cancelCurrentJob();
     restoreOriginalContent();
   }
 
   /**
-   * Ask the background worker which provider/model/dispatch will be used, so we
-   * can size batches before translating. Returns null on any failure; callers
-   * then fall back to block-mode batching.
+   * Abort the current job in the background worker (if any) and clear the id.
    */
-  private async getTranslationPlan(
-    providerName: string | null
-  ): Promise<TranslationPlanMessageResponse | null> {
+  private async cancelCurrentJob(): Promise<void> {
+    const jobId = this.currentJobId;
+    this.currentJobId = null;
+    if (!jobId) {
+      return;
+    }
+    try {
+      await browser.runtime.sendMessage({
+        action: 'cancel-translation',
+        data: { jobId }
+      });
+    } catch (error) {
+      console.warn('[Translator] Failed to send cancel-translation', error);
+    }
+  }
+
+  /**
+   * Open a translation job in the background worker. This captures the settings
+   * snapshot + AbortController for the whole page translation and returns the
+   * resolved provider/model/dispatch so batches can be sized. Returns null on a
+   * transport failure; callers then fall back to block-mode batching.
+   */
+  private async beginJob(
+    jobId: string,
+    providerName: string | null,
+    targetLanguage: string,
+    sourceLanguage: string
+  ): Promise<BeginTranslationMessageResponse | null> {
     try {
       return (await browser.runtime.sendMessage({
-        action: 'getTranslationPlan',
-        data: { providerName }
-      })) as TranslationPlanMessageResponse;
+        action: 'begin-translation',
+        data: { jobId, providerName, targetLanguage, sourceLanguage }
+      })) as BeginTranslationMessageResponse;
     } catch (error) {
-      console.warn('[Translator] Failed to resolve translation plan, assuming block mode', error);
+      console.warn('[Translator] Failed to begin translation job, assuming block mode', error);
       return null;
+    }
+  }
+
+  /**
+   * Tell the background worker a job is finished so it can drop its bookkeeping.
+   */
+  private async endJob(jobId: string): Promise<void> {
+    try {
+      await browser.runtime.sendMessage({
+        action: 'end-translation',
+        data: { jobId }
+      });
+    } catch (error) {
+      console.warn('[Translator] Failed to end translation job', error);
     }
   }
 
@@ -423,7 +520,8 @@ export class Translator {
     texts: string[],
     targetLanguage: string,
     sourceLanguage: string,
-    providerName: string | null
+    providerName: string | null,
+    jobId: string | null = null
   ): Promise<TranslateMessageResponse> {
     return browser.runtime.sendMessage({
       action: 'translate',
@@ -431,7 +529,10 @@ export class Translator {
         texts,
         targetLanguage,
         sourceLanguage,
-        providerName
+        providerName,
+        // Ties this batch to its page-translation job so the worker uses the
+        // job's settings snapshot and aborts the request when the job cancels.
+        jobId
       }
     }) as Promise<TranslateMessageResponse>;
   }

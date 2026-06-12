@@ -58,7 +58,8 @@ export class GeminiProvider extends BaseProvider<GeminiProviderConfig, GoogleGen
   async translate(
     texts: string[],
     targetLanguage: string,
-    sourceLanguage = 'auto'
+    sourceLanguage = 'auto',
+    signal?: AbortSignal
   ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Gemini configuration');
@@ -75,28 +76,41 @@ export class GeminiProvider extends BaseProvider<GeminiProviderConfig, GoogleGen
       const modelName = this.modelName;
       const generationConfig = this.generationConfig;
 
-      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
-        const requestParams: {
-          model: string;
-          contents: string;
-          temperature?: number;
-          maxOutputTokens?: number;
-        } = {
-          model: modelName,
-          contents: prompt
-        };
+      return await this.runTranslation(
+        texts,
+        targetLanguage,
+        sourceLanguage,
+        async (prompt, sendSignal) => {
+          const requestParams: {
+            model: string;
+            contents: string;
+            temperature?: number;
+            maxOutputTokens?: number;
+            config?: { abortSignal?: AbortSignal };
+          } = {
+            model: modelName,
+            contents: prompt
+          };
 
-        if (generationConfig?.temperature !== undefined) {
-          requestParams.temperature = generationConfig.temperature;
-        }
-        if (generationConfig?.maxOutputTokens !== undefined) {
-          requestParams.maxOutputTokens = generationConfig.maxOutputTokens;
-        }
+          if (generationConfig?.temperature !== undefined) {
+            requestParams.temperature = generationConfig.temperature;
+          }
+          if (generationConfig?.maxOutputTokens !== undefined) {
+            requestParams.maxOutputTokens = generationConfig.maxOutputTokens;
+          }
+          // The SDK only honours an AbortSignal placed on `config.abortSignal`.
+          // It is a client-side cancellation: the open HTTP request is dropped,
+          // though Google may still bill any work already performed server-side.
+          if (sendSignal) {
+            requestParams.config = { abortSignal: sendSignal };
+          }
 
-        const response = await client.models.generateContent(requestParams);
+          const response = await client.models.generateContent(requestParams);
 
-        return response.text?.trim() ?? '';
-      });
+          return response.text?.trim() ?? '';
+        },
+        signal
+      );
     });
   }
 

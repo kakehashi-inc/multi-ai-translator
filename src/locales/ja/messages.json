@@ -243,6 +243,14 @@
     "message": "翻訳をキャンセルしました。",
     "description": "ユーザーが翻訳をキャンセルしたときのステータスメッセージ"
   },
+  "statusCancelling": {
+    "message": "翻訳をキャンセルしています...",
+    "description": "Status message while a translation is being cancelled"
+  },
+  "statusCancellingPrevious": {
+    "message": "前の翻訳をキャンセルしています...",
+    "description": "Status message while the previous translation is cancelled before a new one starts"
+  },
   "errorFailedToInitialize": {
     "message": "ポップアップの初期化に失敗しました",
     "description": "ポップアップの初期化が失敗したときのエラーメッセージ"

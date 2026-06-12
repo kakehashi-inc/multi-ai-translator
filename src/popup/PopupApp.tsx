@@ -130,6 +130,10 @@ export function PopupApp() {
   const handleTranslatePage = useCallback(async () => {
     try {
       if (isPageTranslating) {
+        // Cancel the running page translation. 'restore-original' aborts the
+        // in-flight provider request in the background worker and restores the
+        // page; show a "cancelling" state until it resolves.
+        showStatus(t('statusCancelling'), 'info');
         await sendMessageToActiveTab({ action: 'restore-original' });
         setIsPageTranslating(false);
         setIsSelectionTranslating(false);

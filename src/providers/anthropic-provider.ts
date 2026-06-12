@@ -59,7 +59,8 @@ export class AnthropicProvider extends BaseProvider<AnthropicProviderConfig, Ant
   async translate(
     texts: string[],
     targetLanguage: string,
-    sourceLanguage = 'auto'
+    sourceLanguage = 'auto',
+    signal?: AbortSignal
   ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Anthropic configuration');
@@ -79,22 +80,31 @@ export class AnthropicProvider extends BaseProvider<AnthropicProviderConfig, Ant
       const model = this.config.model;
       const client = this.client;
 
-      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
-        const response = await client.messages.create({
-          model,
-          max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_ANTHROPIC_MAX_TOKENS,
-          temperature: this.config.temperature ?? ConstVariables.DEFAULT_ANTHROPIC_TEMPERATURE,
-          messages: [
+      return await this.runTranslation(
+        texts,
+        targetLanguage,
+        sourceLanguage,
+        async (prompt, sendSignal) => {
+          const response = await client.messages.create(
             {
-              role: 'user',
-              content: prompt
-            }
-          ]
-        });
+              model,
+              max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_ANTHROPIC_MAX_TOKENS,
+              temperature: this.config.temperature ?? ConstVariables.DEFAULT_ANTHROPIC_TEMPERATURE,
+              messages: [
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ]
+            },
+            { signal: sendSignal }
+          );
 
-        const content = response.content[0];
-        return 'text' in content ? content.text.trim() : '';
-      });
+          const content = response.content[0];
+          return 'text' in content ? content.text.trim() : '';
+        },
+        signal
+      );
     });
   }
 

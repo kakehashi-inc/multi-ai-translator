@@ -317,20 +317,35 @@ function chunkText(text, maxChunkSize) {
    │
    ▼
 2. ポップアップがアクティブタブのコンテンツスクリプトへ送信
-   browser.tabs.sendMessage(tabId, {
-     action: 'translate-page', provider, language, sourceLanguage
-   })
    （コンテンツスクリプト未注入の場合はポップアップ側で動的に注入）
    │
    ▼
 3. コンテンツスクリプト（Translator）が DOM のテキストノードを抽出・グループ化
    │
    ▼
-4. Translator がテキストをバッチに分割し、選択されたプロバイダーで翻訳
-   （プロバイダーのモデル一覧取得などはバックグラウンドの 'getModels' を利用）
+4. Translator がジョブを開始する：
+     begin-translation { jobId, provider, language }
+   -> ワーカーがプロバイダーを解決し、その設定をスナップショットし、
+      AbortController を生成して { provider, model, dispatch } を返す
    │
    ▼
-5. 翻訳結果を DOM に適用し、ページ上のステータスオーバーレイで進捗/結果を表示
+5. バッチごとに translate { jobId, texts, ... } を送信
+   -> ワーカーはジョブの設定スナップショットと AbortSignal を使って翻訳し、
+      provider.translate(texts, ..., signal) を呼ぶ
+   │
+   ▼
+6. 翻訳結果を DOM に適用
+   │
+   ▼
+7. end-translation { jobId } を送信（ワーカーがジョブを破棄）
+   │
+   ▼
+8. ページ上のステータスオーバーレイで進捗/結果を表示
+
+キャンセル（いずれか）：原文に戻す/キャンセルボタン -> cancel-translation { jobId }；
+タブ close -> tabs.onRemoved；ナビゲーション/リフレッシュ -> tabs.onUpdated(loading)。
+いずれもジョブの controller を abort し、送信中のプロバイダーリクエストを中断する。
+「キャンセルの挙動と設定スナップショット」を参照。
 ```
 
 ### 選択テキスト翻訳フロー
@@ -351,6 +366,92 @@ function chunkText(text, maxChunkSize) {
 5. 選択範囲付近のインラインポップアップに結果を表示
 ```
 
+## キャンセルの挙動と設定スナップショット
+
+ページ翻訳は、設定スナップショットと `AbortSignal`（プロバイダーの SDK まで貫通）を
+持つ**ジョブ**であり、その所有者はバックグラウンドワーカーである。これにより
+キャンセルが実効化され（送信中のリクエストを無視するのではなく abort する）、実行中の
+翻訳が途中の設定変更の影響を受けないようになる。
+
+### ジョブモデル
+
+ページ翻訳は、`translator.ts` が新規生成した `jobId` を付けて `begin-translation` を
+送ると開始する。ワーカーはそのとき `translationJobs` マップに `TranslationJob` を作る：
+
+```ts
+type TranslationJob = {
+  jobId: string;
+  tabId: number | undefined;       // メッセージ送信元から取得。タブ close 時に使う
+  controller: AbortController;     // ジョブごとに 1 つ。abort でジョブをキャンセル
+  provider: string;                // begin 時に一度だけ解決
+  providerConfig: ProviderSettings; // 設定の deep clone スナップショット
+  targetLanguage: string;
+  sourceLanguage: string;
+};
+```
+
+以降、各バッチはその `jobId` を載せた `translate` メッセージとして送られる。ワーカーは
+ジョブを引き、**スナップショット**の設定とジョブの `controller.signal` を使ってバッチを
+翻訳する。ジョブは `end-translation`（正常終了）、`cancel-translation`（ユーザーの
+キャンセル / 原文に戻す / 再翻訳）、またはタブのライフサイクルイベント（後述）で破棄される。
+
+### 設定スナップショット — 実行中のジョブは後からの変更を無視する
+
+`begin-translation` はプロバイダーを解決し、その設定を**deep clone** してジョブに格納する。
+以降の各バッチはこのクローンを読み、ストレージのライブ設定は読まない。そのため翻訳の途中で
+オプション画面でモデル（やその他の設定）を変更しても、**すでに翻訳中のページには影響しない** —
+そのページは開始時の設定で完遂する。新しい設定は次回の翻訳から反映される。（以前のコードは
+バッチごとに `getSettings()` を読み直しており、途中のモデル変更が残りのバッチに漏れていた。）
+
+`jobId` を持たない単発バッチ（選択範囲翻訳）は、従来どおりライブ設定を解決する。単一
+リクエストのため、保護すべき複数バッチの時間窓が存在しないからである。
+
+### キャンセルは送信中のリクエストを abort する
+
+`BaseProvider.translate(texts, target, source, signal?)` と
+`runTranslation(..., send, signal?)` ランナーは `AbortSignal` を受け取る。ランナーは
+各リクエストの前に `signal.throwIfAborted()` を呼び（キャンセル時に残りのテキストを即座に
+止める）、signal を各プロバイダーの `send` に渡し、`send` がそれを SDK に渡す：
+
+- OpenAI / OpenAI-compatible: `chat.completions.create(params, { signal })`
+- Anthropic / Anthropic-compatible: `messages.create(params, { signal })`
+- Gemini: `generateContent({ ..., config: { abortSignal: signal } })`
+- Ollama: signal の `abort` イベントに `client.abort()` を接続（SDK はそのクライアントの
+  全 in-flight リクエストを abort する。各バッチは新しいクライアントを使うため実質的に
+  バッチ単位になる）
+
+signal が abort すると、SDK は `AbortError` で reject する。`handleError` は abort エラーを
+そのまま再 throw し（キャンセルは翻訳失敗ではない）、`translateText` はそれを
+`statusCancelled` の結果に変換するので、UI はエラーではなく「キャンセル」を表示する。
+`BaseProvider.isAbortError(err)` が abort 判定を一元化する（`DOMException`、SDK の abort
+クラス、abort 名のエラーをカバー）。
+
+したがってキャンセルはもはや「将来のバッチを止める」だけに限定されない：いままさに
+プロバイダーと通信中のリクエストも破棄される。N バッチに分割されたページなら、バッチ間の
+N-1 個のチェックポイント**に加えて**、送信中のバッチの中断もできる — つまり実質的に
+どの時点でも止まる。
+
+### キャンセルのトリガー
+
+| トリガー | 検知 | 効果 |
+| --- | --- | --- |
+| 「原文に戻す」/キャンセルボタン | content script の `restoreOriginal()` → `cancel-translation` | 送信中リクエストを abort ＋ DOM を復元 |
+| 実行中の再翻訳 | `translatePage()` が `isTranslating` を検知し、旧ジョブをキャンセル・復元してから新ジョブ開始 | 旧ジョブを abort し、新ジョブで翻訳 |
+| タブ close | ワーカーの `tabs.onRemoved` | そのタブの全ジョブを abort |
+| ナビゲーション /（ハード）リフレッシュ | ワーカーの `tabs.onUpdated`（`status === 'loading'`） | そのタブの全ジョブを abort |
+
+タブ close / ナビゲーションではコンテンツスクリプトが消えるため、反応すべきは**ワーカー**で
+ある — これがジョブに `tabId` を持たせ、ワーカーがタブのライフサイクルイベントを購読する
+理由である。`translateText` の防御的チェック（すでに破棄済みのジョブの `jobId` は翻訳せず
+`AbortError` で reject する）により、キャンセルをすり抜けたバッチが余分なプロバイダー呼び出しを
+通すことを防ぐ。
+
+### 再翻訳の挙動
+
+翻訳の実行中にもう一度「翻訳」を押すと、既存のジョブをキャンセルし（送信中のリクエストを
+abort）、ページを原文に戻し、`statusCancellingPrevious` を短く表示してから、現在の設定で
+新しいジョブを開始する。
+
 ## ストレージ戦略
 
 ### WebExtension Storage API
@@ -370,7 +471,7 @@ function chunkText(text, maxChunkSize) {
       defaultTargetLanguage: 'ja',
       uiLanguage: 'ja',
       batchMaxChars: 2000,
-      batchMaxItems: 50
+      batchMaxItems: 10
     },
     providers: {
       // プロバイダー名をキーとする。フィールドはプロバイダーごとに異なる:

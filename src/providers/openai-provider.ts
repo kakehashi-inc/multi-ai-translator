@@ -59,7 +59,8 @@ export class OpenAIProvider extends BaseProvider<OpenAIProviderConfig, OpenAI> {
   async translate(
     texts: string[],
     targetLanguage: string,
-    sourceLanguage = 'auto'
+    sourceLanguage = 'auto',
+    signal?: AbortSignal
   ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid OpenAI configuration');
@@ -79,26 +80,35 @@ export class OpenAIProvider extends BaseProvider<OpenAIProviderConfig, OpenAI> {
       const model = this.config.model;
       const client = this.client;
 
-      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
-        const response = await client.chat.completions.create({
-          model,
-          messages: [
+      return await this.runTranslation(
+        texts,
+        targetLanguage,
+        sourceLanguage,
+        async (prompt, sendSignal) => {
+          const response = await client.chat.completions.create(
             {
-              role: 'system',
-              content:
-                'You are a professional translator. Provide only the translation without any explanations.'
+              model,
+              messages: [
+                {
+                  role: 'system',
+                  content:
+                    'You are a professional translator. Provide only the translation without any explanations.'
+                },
+                {
+                  role: 'user',
+                  content: prompt
+                }
+              ],
+              temperature: this.config.temperature ?? ConstVariables.DEFAULT_OPENAI_TEMPERATURE,
+              max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_OPENAI_MAX_TOKENS
             },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: this.config.temperature ?? ConstVariables.DEFAULT_OPENAI_TEMPERATURE,
-          max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_OPENAI_MAX_TOKENS
-        });
+            { signal: sendSignal }
+          );
 
-        return response.choices[0]?.message?.content?.trim() ?? '';
-      });
+          return response.choices[0]?.message?.content?.trim() ?? '';
+        },
+        signal
+      );
     });
   }
 

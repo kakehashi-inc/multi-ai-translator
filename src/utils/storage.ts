@@ -18,6 +18,7 @@ const {
   PROVIDER_ORDER,
   DEFAULT_BATCH_MAX_CHARS,
   DEFAULT_BATCH_MAX_ITEMS,
+  MAX_BATCH_MAX_ITEMS,
   DEFAULT_LANGUAGE,
   DEFAULT_FONT_SIZE,
   DEFAULT_OPENAI_TEMPERATURE,
@@ -176,6 +177,14 @@ function normalizeSettings(storedSettings?: Settings): Settings {
   if (!normalized.common.defaultTargetLanguage) {
     normalized.common.defaultTargetLanguage = getBrowserLanguage();
   }
+
+  // Clamp the configurable batch size to the supported range. Guards against
+  // out-of-range values arriving via imported settings or older stored data,
+  // independent of the options-screen input cap.
+  const items = Number(normalized.common.batchMaxItems);
+  normalized.common.batchMaxItems = Number.isFinite(items)
+    ? Math.min(Math.max(Math.trunc(items), 1), MAX_BATCH_MAX_ITEMS)
+    : DEFAULT_BATCH_MAX_ITEMS;
 
   return normalized;
 }

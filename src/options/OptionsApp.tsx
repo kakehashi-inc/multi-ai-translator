@@ -46,6 +46,7 @@ import { useI18n } from '../ui/useI18n';
 const {
   PROVIDER_ORDER,
   DEFAULT_BATCH_MAX_ITEMS,
+  MAX_BATCH_MAX_ITEMS,
   DEFAULT_BATCH_MAX_CHARS,
   DEFAULT_OPENAI_TEMPERATURE,
   DEFAULT_ANTHROPIC_MAX_TOKENS,
@@ -516,11 +517,17 @@ export function OptionsApp() {
               placeholder={`${DEFAULT_BATCH_MAX_ITEMS}`}
               value={settings.common.batchMaxItems ?? ''}
               onChange={(e) => {
-                const parsed =
-                  e.target.value === '' ? DEFAULT_BATCH_MAX_ITEMS : Number(e.target.value);
-                updateCommonField('batchMaxItems', parsed);
+                if (e.target.value === '') {
+                  updateCommonField('batchMaxItems', DEFAULT_BATCH_MAX_ITEMS);
+                  return;
+                }
+                // Clamp to [1, MAX_BATCH_MAX_ITEMS] so a hand-typed value cannot
+                // exceed the supported maximum even though the input also caps it.
+                const parsed = Number(e.target.value);
+                const clamped = Math.min(Math.max(parsed, 1), MAX_BATCH_MAX_ITEMS);
+                updateCommonField('batchMaxItems', clamped);
               }}
-              slotProps={{ htmlInput: { min: 1, max: 100 } }}
+              slotProps={{ htmlInput: { min: 1, max: MAX_BATCH_MAX_ITEMS } }}
             />
             <TextField
               type="number"

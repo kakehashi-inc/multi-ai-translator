@@ -3,20 +3,40 @@
  * Handles extension lifecycle, context menus, and message passing
  */
 import browser from 'webextension-polyfill';
-import type { Menus, Tabs } from 'webextension-polyfill';
+import type { Menus, Runtime, Tabs } from 'webextension-polyfill';
 import { createProvider } from '../providers';
 import { getSettings, addToHistory } from '../utils/storage';
 import { getMessage } from '../utils/i18n';
 import { resolveProfile, resolveDispatch } from '../prompts';
 import type { DispatchMode } from '../prompts';
 import type { ProviderSettings } from '../types/settings';
-import type { BaseProvider } from '../providers/base-provider';
+import { BaseProvider } from '../providers/base-provider';
 
 type TranslatePayload = {
   texts: string[];
   targetLanguage?: string;
   sourceLanguage?: string;
   providerName?: string | null;
+  // When present, ties this batch to a translation job started via
+  // 'begin-translation'. The job owns the settings snapshot and the
+  // AbortController, so the batch is translated with the configuration captured
+  // when the job started (immune to later settings changes) and can be aborted.
+  jobId?: string | null;
+};
+
+type BeginTranslationPayload = {
+  jobId: string;
+  providerName?: string | null;
+  targetLanguage?: string;
+  sourceLanguage?: string;
+};
+
+type CancelTranslationPayload = {
+  jobId: string;
+};
+
+type EndTranslationPayload = {
+  jobId: string;
 };
 
 type ProviderRequestPayload = {
@@ -30,6 +50,9 @@ type TranslationPlanPayload = {
 
 type BackgroundRequest =
   | { action: 'translate'; data: TranslatePayload }
+  | { action: 'begin-translation'; data: BeginTranslationPayload }
+  | { action: 'cancel-translation'; data: CancelTranslationPayload }
+  | { action: 'end-translation'; data: EndTranslationPayload }
   | { action: 'getTranslationPlan'; data?: TranslationPlanPayload }
   | { action: 'getSettings' }
   | { action: 'testProvider'; data: ProviderRequestPayload }
@@ -57,6 +80,68 @@ type TranslationPlanResponse =
   | { success: false; error: string };
 
 type ProviderResponse = { success: true } | { success: false; error: string };
+
+type BeginTranslationResponse =
+  | { success: true; provider: string; model: string | null; dispatch: DispatchMode }
+  | { success: false; error: string };
+
+type SimpleSuccessResponse = { success: true };
+
+/**
+ * A page-translation job. Created by 'begin-translation' and torn down by
+ * 'end-translation', a cancel, or tab close / navigation.
+ *
+ * The job captures a SETTINGS SNAPSHOT at start time: the resolved provider name
+ * plus a deep clone of its config and the source/target languages. Every batch
+ * for this job is translated from the snapshot, so changing the model or any
+ * other setting mid-translation does NOT leak into a job that is already running
+ * — the page finishes with the configuration it started with.
+ *
+ * The job also owns an AbortController. Aborting it cancels the request that is
+ * currently in flight (the SDKs receive the signal) and makes any subsequent
+ * batch reject immediately.
+ */
+type TranslationJob = {
+  jobId: string;
+  tabId: number | undefined;
+  controller: AbortController;
+  provider: string;
+  providerConfig: ProviderSettings;
+  targetLanguage: string;
+  sourceLanguage: string;
+};
+
+// Active page-translation jobs, keyed by jobId.
+const translationJobs = new Map<string, TranslationJob>();
+
+function deepCloneConfig(config: ProviderSettings): ProviderSettings {
+  return JSON.parse(JSON.stringify(config)) as ProviderSettings;
+}
+
+/**
+ * Abort and remove a job. Safe to call with an unknown jobId.
+ */
+function disposeJob(jobId: string, reason: string): void {
+  const job = translationJobs.get(jobId);
+  if (!job) {
+    return;
+  }
+  translationJobs.delete(jobId);
+  if (!job.controller.signal.aborted) {
+    job.controller.abort(new DOMException(reason, 'AbortError'));
+  }
+}
+
+/**
+ * Abort every job that belongs to a tab (used on tab close / navigation).
+ */
+function disposeJobsForTab(tabId: number, reason: string): void {
+  for (const [jobId, job] of translationJobs) {
+    if (job.tabId === tabId) {
+      disposeJob(jobId, reason);
+    }
+  }
+}
 
 type ModelsResponse =
   | { success: true; models: string[] }
@@ -169,6 +254,28 @@ if (browser.runtime.onStartup) {
   });
 }
 
+// Cancel any translation running in a tab when that tab is closed: the content
+// script (and its progress UI) is gone, so there is no reason to keep calling
+// the provider. Without this the background worker would happily finish every
+// already-dispatched batch for a tab the user has closed.
+if (browser.tabs?.onRemoved) {
+  browser.tabs.onRemoved.addListener((tabId) => {
+    disposeJobsForTab(tabId, 'Tab closed');
+  });
+}
+
+// Cancel on navigation / (hard) refresh. When a tab starts loading a new
+// document the old page — and any translation targeting it — no longer exists.
+// 'loading' fires for reloads and in-page navigations alike; the freshly loaded
+// page will start its own job with a new jobId, so dropping the old one is safe.
+if (browser.tabs?.onUpdated) {
+  browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
+    if (changeInfo.status === 'loading') {
+      disposeJobsForTab(tabId, 'Page navigated or reloaded');
+    }
+  });
+}
+
 /**
  * Create context menus
  */
@@ -227,8 +334,8 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
 /**
  * Handle messages from content scripts and popup
  */
-browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-  handleMessage(request as BackgroundRequest)
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  handleMessage(request as BackgroundRequest, sender)
     .then(sendResponse)
     .catch((error) => {
       console.error('[Multi AI Translator] Message error:', error);
@@ -241,11 +348,21 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 /**
  * Handle message routing
  */
-async function handleMessage(request: BackgroundRequest): Promise<unknown> {
+async function handleMessage(
+  request: BackgroundRequest,
+  sender?: Runtime.MessageSender
+): Promise<unknown> {
   const { action } = request;
   const data = (request as { data?: unknown }).data;
+  const senderTabId = sender?.tab?.id;
 
   switch (action) {
+    case 'begin-translation':
+      return await beginTranslation((data || {}) as BeginTranslationPayload, senderTabId);
+    case 'cancel-translation':
+      return cancelTranslation((data || {}) as CancelTranslationPayload);
+    case 'end-translation':
+      return endTranslation((data || {}) as EndTranslationPayload);
     case 'translate':
       return await translateText((data || {}) as TranslatePayload);
     case 'getTranslationPlan':
@@ -278,24 +395,28 @@ async function handleMessage(request: BackgroundRequest): Promise<unknown> {
 }
 
 /**
- * Translate text using specified provider
+ * Begin a page-translation job: resolve the provider, capture a settings
+ * snapshot, and register an AbortController. Subsequent 'translate' batches that
+ * carry this jobId are translated from the snapshot and can be aborted.
+ *
+ * Returns the resolved provider / model / dispatch so the translator can size
+ * its batches without a separate getTranslationPlan round-trip.
  */
-async function translateText({
-  texts,
-  targetLanguage,
-  sourceLanguage,
-  providerName
-}: TranslatePayload): Promise<TranslateResponse> {
+async function beginTranslation(
+  { jobId, providerName, targetLanguage, sourceLanguage }: BeginTranslationPayload,
+  tabId: number | undefined
+): Promise<BeginTranslationResponse> {
   try {
-    if (!texts || texts.length === 0) {
-      throw new Error(getMessage('errorNoTranslatableText'));
+    if (!jobId) {
+      throw new Error('jobId is required');
     }
+
+    // If a job with this id somehow already exists (e.g. a stale one), replace
+    // it so we never leak an old controller.
+    disposeJob(jobId, 'Replaced by a new translation job');
+
     const settings = await getSettings();
     const lastUsed = await getLastUsedProvider();
-    // Provider selection rule:
-    //   1. If the caller passed an explicit, enabled provider → use it
-    //   2. Otherwise if lastUsedProvider is enabled → use it
-    //   3. Otherwise → first enabled provider
     const requested = providerName || lastUsed || null;
     const provider = resolveEnabledProvider(settings, requested);
 
@@ -303,20 +424,138 @@ async function translateText({
       throw new Error(getMessage('errorNoEnabledProviders'));
     }
 
-    // Save last used provider
-    await setLastUsedProvider(provider);
-
     const providerConfig = settings.providers[provider];
     if (!providerConfig) {
       throw new Error(getMessage('errorProviderNotEnabled', [provider]));
+    }
+
+    await setLastUsedProvider(provider);
+
+    const job: TranslationJob = {
+      jobId,
+      tabId,
+      controller: new AbortController(),
+      provider,
+      // Deep clone so later edits to stored settings cannot mutate this snapshot.
+      providerConfig: deepCloneConfig(providerConfig),
+      targetLanguage: targetLanguage || settings.common.defaultTargetLanguage,
+      sourceLanguage: sourceLanguage || settings.common.defaultSourceLanguage || 'auto'
+    };
+    translationJobs.set(jobId, job);
+
+    const model = providerConfig.model ?? null;
+    const profile = resolveProfile(model ?? undefined);
+    const dispatch = resolveDispatch(profile, model ?? undefined);
+
+    return { success: true, provider, model, dispatch };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+/**
+ * Cancel a running job (explicit user cancel / restore / re-translate). Aborts
+ * the in-flight request and drops the job.
+ */
+function cancelTranslation({ jobId }: CancelTranslationPayload): SimpleSuccessResponse {
+  if (jobId) {
+    disposeJob(jobId, 'Translation cancelled by user');
+  }
+  return { success: true };
+}
+
+/**
+ * End a job after its last batch. Just removes bookkeeping; nothing to abort.
+ */
+function endTranslation({ jobId }: EndTranslationPayload): SimpleSuccessResponse {
+  if (jobId) {
+    translationJobs.delete(jobId);
+  }
+  return { success: true };
+}
+
+/**
+ * Translate one batch of texts.
+ *
+ * Two modes:
+ *   - Job batch (jobId present and registered): use the job's settings SNAPSHOT
+ *     and AbortController. This is what page translation uses, so the whole page
+ *     finishes with the settings it started with and can be cancelled mid-call.
+ *   - Ad-hoc (no/unknown jobId): resolve settings live and run without a signal.
+ *     Used by selection translation and as a defensive fallback.
+ */
+async function translateText({
+  texts,
+  targetLanguage,
+  sourceLanguage,
+  providerName,
+  jobId
+}: TranslatePayload): Promise<TranslateResponse> {
+  try {
+    if (!texts || texts.length === 0) {
+      throw new Error(getMessage('errorNoTranslatableText'));
+    }
+
+    const job = jobId ? translationJobs.get(jobId) : undefined;
+
+    // If the caller supplied a jobId but the job is already gone (cancelled or
+    // ended), do not silently translate anyway — that would be the very
+    // "pretend to cancel but keep calling the API" behaviour we are fixing.
+    if (jobId && !job) {
+      throw new DOMException('Translation was cancelled', 'AbortError');
+    }
+
+    let provider: string;
+    let providerConfig: ProviderSettings;
+    let resolvedTarget: string;
+    let resolvedSource: string;
+    let signal: AbortSignal | undefined;
+
+    if (job) {
+      // Job batch: use the frozen snapshot, ignore any live settings changes.
+      job.controller.signal.throwIfAborted();
+      provider = job.provider;
+      providerConfig = job.providerConfig;
+      resolvedTarget = targetLanguage || job.targetLanguage;
+      resolvedSource = sourceLanguage || job.sourceLanguage;
+      signal = job.controller.signal;
+    } else {
+      // Ad-hoc batch: resolve from current settings.
+      const settings = await getSettings();
+      const lastUsed = await getLastUsedProvider();
+      // Provider selection rule:
+      //   1. If the caller passed an explicit, enabled provider → use it
+      //   2. Otherwise if lastUsedProvider is enabled → use it
+      //   3. Otherwise → first enabled provider
+      const requested = providerName || lastUsed || null;
+      const resolved = resolveEnabledProvider(settings, requested);
+
+      if (!resolved) {
+        throw new Error(getMessage('errorNoEnabledProviders'));
+      }
+      await setLastUsedProvider(resolved);
+
+      const cfg = settings.providers[resolved];
+      if (!cfg) {
+        throw new Error(getMessage('errorProviderNotEnabled', [resolved]));
+      }
+      provider = resolved;
+      providerConfig = cfg;
+      resolvedTarget = targetLanguage || settings.common.defaultTargetLanguage;
+      resolvedSource = sourceLanguage || 'auto';
+      signal = undefined;
     }
 
     // Create and initialize provider
     const providerInstance = createProvider(provider, providerConfig) as BaseProvider;
     const translations = await providerInstance.translate(
       texts,
-      targetLanguage || settings.common.defaultTargetLanguage,
-      sourceLanguage || 'auto'
+      resolvedTarget,
+      resolvedSource,
+      signal
     );
 
     // Add to history (record the first item as a representative entry)
@@ -324,8 +563,8 @@ async function translateText({
       original: (texts[0] ?? '').substring(0, 100),
       translated: (translations[0] ?? '').substring(0, 100),
       provider,
-      targetLanguage: targetLanguage || null,
-      sourceLanguage: sourceLanguage || null
+      targetLanguage: resolvedTarget || null,
+      sourceLanguage: resolvedSource || null
     });
 
     return {
@@ -334,6 +573,14 @@ async function translateText({
       provider
     };
   } catch (error) {
+    if (BaseProvider.isAbortError(error)) {
+      // Cancellation is an expected outcome, not a failure. Report it as such so
+      // the translator can show "cancelled" rather than an error.
+      return {
+        success: false,
+        error: getMessage('statusCancelled')
+      };
+    }
     console.error('[Multi AI Translator] Translation error:', error);
     return {
       success: false,

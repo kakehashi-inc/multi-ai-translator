@@ -16,7 +16,11 @@ export class ConstVariables {
   static DEFAULT_OLLAMA_HOST = 'http://127.0.0.1:11434';
 
   // Batch translation
-  static DEFAULT_BATCH_MAX_ITEMS = 20;
+  static DEFAULT_BATCH_MAX_ITEMS = 10;
+  // Upper bound the user can configure for items per batch. Larger batches make
+  // a single failed/cancelled request lose more work and confuse models that
+  // dislike many texts at once, so the configurable maximum is capped here.
+  static MAX_BATCH_MAX_ITEMS = 20;
   static DEFAULT_BATCH_MAX_CHARS = 2000;
   static DEFAULT_CHUNK_MAX_LENGTH = 1000;
 

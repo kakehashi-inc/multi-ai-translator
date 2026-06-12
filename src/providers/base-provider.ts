@@ -75,7 +75,8 @@ export abstract class BaseProvider<
   abstract translate(
     texts: string[],
     targetLanguage: string,
-    sourceLanguage?: string
+    sourceLanguage?: string,
+    signal?: AbortSignal
   ): Promise<string[]>;
 
   /**
@@ -103,17 +104,23 @@ export abstract class BaseProvider<
    * @param targetLanguage Target language code/label.
    * @param sourceLanguage Source language code/label ('auto' for detection).
    * @param send           Provider-specific single-prompt sender.
+   * @param signal         Optional AbortSignal. Checked before every request and
+   *                       forwarded to `send` so an in-flight call can be aborted.
    * @returns Translations aligned 1:1 with `texts`.
    */
   protected async runTranslation(
     texts: string[],
     targetLanguage: string,
     sourceLanguage: string,
-    send: SendPrompt
+    send: SendPrompt,
+    signal?: AbortSignal
   ): Promise<string[]> {
     if (texts.length === 0) {
       return [];
     }
+
+    // Abort fast if cancellation already happened before we sent anything.
+    signal?.throwIfAborted();
 
     const model = 'model' in this.config ? (this.config as { model?: string }).model : undefined;
     const profile = resolveProfile(model);
@@ -128,7 +135,7 @@ export abstract class BaseProvider<
 
     if (dispatch === 'block' && profile.buildBlockPrompt && profile.parseBlockResponse) {
       const prompt = profile.buildBlockPrompt(texts, context);
-      const output = await send(prompt);
+      const output = await send(prompt, signal);
       return profile.parseBlockResponse(output, texts);
     }
 
@@ -145,13 +152,16 @@ export abstract class BaseProvider<
     const attemptCount = Math.max(1, profile.singleAttemptCount ?? 1);
     const result = texts.slice(); // defaults to the originals
     for (let i = 0; i < texts.length; i++) {
+      // Abort between texts so a cancel stops the remaining items immediately
+      // rather than after the whole batch finishes.
+      signal?.throwIfAborted();
       const text = texts[i];
       if (!text || text.trim() === '') {
         continue;
       }
       for (let attempt = 0; attempt < attemptCount; attempt++) {
         const prompt = profile.buildSinglePrompt(text, context, attempt);
-        const output = await send(prompt);
+        const output = await send(prompt, signal);
         const parsed = profile.parseSingleResponse(output, text, attempt);
 
         if (parsed.status === 'ok') {
@@ -182,6 +192,12 @@ export abstract class BaseProvider<
    * @throws {Error} Formatted error with helpful message
    */
   protected handleError(error: unknown): never {
+    // A cancellation is not a translation failure — let it propagate unchanged
+    // so the caller (background worker / translator) can treat it as a cancel.
+    if (BaseProvider.isAbortError(error)) {
+      throw error;
+    }
+
     const message = error instanceof Error ? error.message : String(error);
 
     // In development we keep detailed provider-level diagnostics, but avoid
@@ -201,6 +217,27 @@ export abstract class BaseProvider<
     }
 
     throw new Error(`Translation failed: ${message}`);
+  }
+
+  /**
+   * Detect a cancellation error raised by an aborted AbortSignal. Covers the
+   * DOMException thrown by `throwIfAborted()` / `fetch`, SDK-specific
+   * `APIUserAbortError`-style classes (matched by name), and plain Errors whose
+   * name/message indicate an abort.
+   */
+  static isAbortError(error: unknown): boolean {
+    if (!error) {
+      return false;
+    }
+    if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
+      return error.name === 'AbortError';
+    }
+    const name = (error as { name?: unknown }).name;
+    if (typeof name === 'string' && /abort/i.test(name)) {
+      return true;
+    }
+    const message = (error as { message?: unknown }).message;
+    return typeof message === 'string' && /\baborted\b/i.test(message);
   }
 
   /**

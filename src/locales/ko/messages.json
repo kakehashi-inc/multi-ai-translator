@@ -243,6 +243,14 @@
     "message": "번역이 취소되었습니다.",
     "description": "Status message when translation is cancelled by the user"
   },
+  "statusCancelling": {
+    "message": "번역을 취소하는 중...",
+    "description": "Status message while a translation is being cancelled"
+  },
+  "statusCancellingPrevious": {
+    "message": "이전 번역을 취소하는 중...",
+    "description": "Status message while the previous translation is cancelled before a new one starts"
+  },
   "errorFailedToInitialize": {
     "message": "팝업 초기화에 실패했습니다",
     "description": "Error message when popup initialization fails"

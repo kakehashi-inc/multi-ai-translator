@@ -327,7 +327,7 @@ Anthropic-compatible, etc.) with no provider-specific code.
       defaultTargetLanguage: 'ja',
       uiLanguage: 'ja',
       batchMaxChars: 2000,
-      batchMaxItems: 50
+      batchMaxItems: 10
     },
     providers: {
       // Keyed by provider name. Fields vary per provider; common ones:
@@ -365,11 +365,22 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
 ```text
 1. User clicks "Translate Page" in Popup
 2. Popup sends { action: 'translate-page', provider, language }
-3. Background worker resolves settings + provider, injects content script if necessary
-4. Content script groups text nodes and streams them back
-5. Background batches requests and calls provider.translate(...)
+3. Background worker injects the content script if necessary
+4. Content script groups text nodes and opens a job:
+     begin-translation { jobId, provider, language }
+   -> worker resolves the provider, snapshots its settings, creates an
+      AbortController, and returns { provider, model, dispatch }
+5. For each batch the content script sends translate { jobId, texts, ... }
+   -> worker translates using the job's settings snapshot + AbortSignal and
+      calls provider.translate(texts, ..., signal)
 6. Content script receives translations and updates DOM
-7. Status overlay reports success / errors
+7. Content script sends end-translation { jobId } (worker drops the job)
+8. Status overlay reports success / errors
+
+Cancellation (any of): restore/cancel button -> cancel-translation { jobId };
+tab close -> tabs.onRemoved; navigation/refresh -> tabs.onUpdated(loading).
+Each aborts the job's controller, tearing down the in-flight provider request.
+See "Cancellation Semantics and Settings Snapshots".
 ```
 
 ### Selection Translation
@@ -380,6 +391,100 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
 3. Background worker translates via provider
 4. Result is shown in a popup bubble near the selection
 ```
+
+## Cancellation Semantics and Settings Snapshots
+
+Page translation is a **job**, owned by the background worker, with a settings
+snapshot and an `AbortSignal` threaded all the way down to the provider SDK. This
+makes cancellation real (the in-flight request is aborted, not just ignored) and
+makes a running translation immune to settings changes.
+
+### The job model
+
+A page translation starts when `translator.ts` sends `begin-translation` with a
+freshly generated `jobId`. The worker then creates a `TranslationJob` in its
+`translationJobs` map:
+
+```ts
+type TranslationJob = {
+  jobId: string;
+  tabId: number | undefined;       // from the message sender; used on tab close
+  controller: AbortController;     // one per job; aborting it cancels the job
+  provider: string;                // resolved once, at begin time
+  providerConfig: ProviderSettings; // deep-cloned SNAPSHOT of the config
+  targetLanguage: string;
+  sourceLanguage: string;
+};
+```
+
+Each batch is then sent as a `translate` message carrying that `jobId`. The
+worker looks the job up and translates the batch using the **snapshot** config
+and the job's `controller.signal`. The job is torn down by `end-translation`
+(normal finish), `cancel-translation` (user cancel / restore / re-translate), or
+a tab lifecycle event (see below).
+
+### Settings snapshot — a running job ignores later edits
+
+`begin-translation` resolves the provider and **deep-clones** its config into the
+job. Every subsequent batch reads from that clone, not from live storage, so
+changing the model (or any other setting) in the options page mid-translation
+does **not** affect a page that is already translating — it finishes with the
+configuration it started with. Only the next translation picks up the new
+settings. (The previous code re-read `getSettings()` on every batch, which let a
+mid-run model change leak into the remaining batches.)
+
+Ad-hoc batches with no `jobId` (selection translation) still resolve settings
+live — they are a single request, so there is no multi-batch window to protect.
+
+### Cancellation aborts the in-flight request
+
+`BaseProvider.translate(texts, target, source, signal?)` and the
+`runTranslation(..., send, signal?)` runner take an `AbortSignal`. The runner
+calls `signal.throwIfAborted()` before every request (so a cancel stops the
+remaining texts immediately) and forwards the signal to each provider's `send`,
+which passes it to the SDK:
+
+- OpenAI / OpenAI-compatible: `chat.completions.create(params, { signal })`
+- Anthropic / Anthropic-compatible: `messages.create(params, { signal })`
+- Gemini: `generateContent({ ..., config: { abortSignal: signal } })`
+- Ollama: `client.abort()` wired to the signal's `abort` event (the SDK aborts
+  all in-flight requests on the client; each batch uses a fresh client, so this
+  is effectively per-batch)
+
+When the signal aborts, the SDK rejects with an `AbortError`. `handleError`
+re-throws abort errors unchanged (a cancel is not a translation failure), and
+`translateText` maps them to a `statusCancelled` result so the UI shows
+"cancelled" rather than an error. `BaseProvider.isAbortError(err)` centralizes
+abort detection (covers `DOMException`, SDK abort classes, and abort-named
+errors).
+
+So cancellation is no longer bounded to "stop future batches": the request
+currently talking to the provider is torn down too. For a page split into N
+batches there are N-1 between-batch checkpoints **plus** mid-request abortion of
+whichever batch is in flight — i.e. it stops at essentially any point.
+
+### What triggers a cancel
+
+| Trigger | Detected by | Effect |
+| --- | --- | --- |
+| "Restore Original" / cancel button | content script `restoreOriginal()` → `cancel-translation` | abort in-flight request + restore DOM |
+| Re-translate while running | `translatePage()` sees `isTranslating`, cancels the old job, restores, then starts a new job | old job aborted; new job translates |
+| Tab closed | worker `tabs.onRemoved` | abort all jobs for that tab |
+| Navigation / (hard) refresh | worker `tabs.onUpdated` with `status === 'loading'` | abort all jobs for that tab |
+
+For tab close / navigation the content script is gone, so the **worker** is the
+one that must react — which is why the job carries its `tabId` and the worker
+listens to tab lifecycle events. The defensive check in `translateText` (a
+`jobId` whose job is already gone rejects with `AbortError` instead of
+translating) guarantees a batch that races past a cancel cannot sneak an extra
+provider call through.
+
+### Re-translate behavior
+
+Pressing Translate again while a translation is running cancels the existing job
+(aborting its in-flight request), restores the page to the original, briefly
+shows `statusCancellingPrevious`, then starts a fresh job with the current
+settings.
 
 ## Security Considerations
 

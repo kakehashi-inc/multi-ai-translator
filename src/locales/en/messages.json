@@ -243,6 +243,14 @@
     "message": "Translation cancelled.",
     "description": "Status message when translation is cancelled by the user"
   },
+  "statusCancelling": {
+    "message": "Cancelling translation...",
+    "description": "Status message while a translation is being cancelled"
+  },
+  "statusCancellingPrevious": {
+    "message": "Cancelling the previous translation...",
+    "description": "Status message while the previous translation is cancelled before a new one starts"
+  },
   "errorFailedToInitialize": {
     "message": "Failed to initialize popup",
     "description": "Error message when popup initialization fails"

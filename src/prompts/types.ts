@@ -123,5 +123,10 @@ export type SingleResult =
  * A function provided by the provider that sends a single prompt string to the
  * underlying API and resolves with the raw model output. The runner uses this
  * to perform the actual network call without knowing the provider.
+ *
+ * `signal` (when provided) must be forwarded to the underlying SDK / fetch so an
+ * in-flight request can be aborted mid-call. When the signal is aborted the
+ * provider should let the resulting error (typically an `AbortError`) propagate;
+ * the runner treats it as a cancellation rather than a translation failure.
  */
-export type SendPrompt = (prompt: string) => Promise<string>;
+export type SendPrompt = (prompt: string, signal?: AbortSignal) => Promise<string>;

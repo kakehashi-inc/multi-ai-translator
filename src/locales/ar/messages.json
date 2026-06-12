@@ -243,6 +243,14 @@
     "message": "تم إلغاء الترجمة.",
     "description": "Status message when translation is cancelled by the user"
   },
+  "statusCancelling": {
+    "message": "جارٍ إلغاء الترجمة...",
+    "description": "Status message while a translation is being cancelled"
+  },
+  "statusCancellingPrevious": {
+    "message": "جارٍ إلغاء الترجمة السابقة...",
+    "description": "Status message while the previous translation is cancelled before a new one starts"
+  },
   "errorFailedToInitialize": {
     "message": "فشل في تهيئة النافذة المنبثقة",
     "description": "Error message when popup initialization fails"
