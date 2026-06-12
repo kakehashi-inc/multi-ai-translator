@@ -135,33 +135,43 @@ export abstract class BaseProvider<
     // Single dispatch: one request per text. Empty / whitespace-only items are
     // passed through unchanged and never sent to the model.
     //
-    // Fallback: a profile may offer several prompt variants (singleAttemptCount)
-    // and an isSingleResponseAcceptable check. We try variants in order and keep
-    // the first acceptable output; if none is acceptable we keep the last one
-    // (best effort — the profile/model may simply be unable to do better).
+    // For each text the profile may offer several prompt variants
+    // (singleAttemptCount). The profile interprets each output into a status:
+    //   ok    → use the translation (done)
+    //   skip  → keep the original text (done — do NOT fall back)
+    //   error → broken; try the next variant if there is one
+    // If every variant errors, we keep the original — a broken/runaway output is
+    // never surfaced; an untranslated original is far better.
     const attemptCount = Math.max(1, profile.singleAttemptCount ?? 1);
-    const result = texts.slice();
+    const result = texts.slice(); // defaults to the originals
     for (let i = 0; i < texts.length; i++) {
       const text = texts[i];
       if (!text || text.trim() === '') {
         continue;
       }
-      let output = '';
-      let usedAttempt = 0;
       for (let attempt = 0; attempt < attemptCount; attempt++) {
-        usedAttempt = attempt;
         const prompt = profile.buildSinglePrompt(text, context, attempt);
-        output = await send(prompt);
-        if (
-          !profile.isSingleResponseAcceptable ||
-          profile.isSingleResponseAcceptable(output, text, attempt)
-        ) {
+        const output = await send(prompt);
+        const parsed = profile.parseSingleResponse(output, text, attempt);
+
+        if (parsed.status === 'ok') {
+          result[i] = parsed.text;
           break;
         }
+        if (parsed.status === 'skip') {
+          // Untranslatable; keep the original (already in result[i]).
+          break;
+        }
+        // status === 'error': log for diagnostics and try the next variant.
+        if (process.env.NODE_ENV !== 'production') {
+          console.debug(
+            `[${this.name}] single attempt ${attempt} error: ${parsed.text} — input: ${JSON.stringify(
+              text.slice(0, 80)
+            )}`
+          );
+        }
+        // If this was the last attempt, result[i] stays as the original.
       }
-      // Parse with the variant that actually produced the kept output, so
-      // variant-specific parsing (e.g. tag stripping) applies correctly.
-      result[i] = profile.parseSingleResponse(output, text, usedAttempt);
     }
     return result;
   }

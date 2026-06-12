@@ -15,7 +15,7 @@
  * without a dedicated profile.
  */
 import { toEnglishName } from '../utils/languages';
-import type { PromptContext, PromptProfile } from './types';
+import type { PromptContext, PromptProfile, SingleResult } from './types';
 
 function escapeXml(text: string = ''): string {
   return text
@@ -142,9 +142,10 @@ ${requestPayload}`;
 ${text}`;
   },
 
-  parseSingleResponse(output: string): string {
-    // The whole reply is the translation; trim surrounding whitespace the model
-    // may add. Inner whitespace/newlines are preserved.
-    return (output ?? '').trim();
+  parseSingleResponse(output: string): SingleResult {
+    // The whole reply is the translation. Empty → skip (keep original); the
+    // default profile has no broken-output patterns to flag, so otherwise ok.
+    const trimmed = (output ?? '').trim();
+    return trimmed === '' ? { status: 'skip' } : { status: 'ok', text: trimmed };
   }
 };

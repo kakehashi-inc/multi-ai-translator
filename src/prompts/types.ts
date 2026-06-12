@@ -95,23 +95,29 @@ export interface PromptProfile {
   buildSinglePrompt(text: string, context: PromptContext, attempt?: number): string;
 
   /**
-   * Decide whether a single-text model output is acceptable. When it returns
-   * false and another attempt is available, the runner retries with the next
-   * prompt variant. Omit to never retry (every output accepted).
+   * Interpret a single-text model output into a {@link SingleResult}. This both
+   * parses and classifies — the profile decides what the output means, the
+   * runner decides what to do about it:
+   *   - `ok`    → use `text` as the translation
+   *   - `skip`  → treat as untranslatable; keep the original text (no fallback)
+   *   - `error` → the output is broken; the runner may try the next prompt
+   *               variant. `text` is a short reason for debug logging only.
    *
-   * `attempt` is the prompt-variant index that produced `output`, so the check
-   * can be specific to that variant (each prompt has its own failure modes —
-   * e.g. one leaks its own block labels, another leaks its wrapper tag).
+   * `attempt` is the prompt-variant index that produced `output`, so parsing /
+   * classification can be specific to that variant (each prompt has its own
+   * failure modes — one leaks its block labels, another its wrapper tag).
    */
-  isSingleResponseAcceptable?(output: string, original: string, attempt: number): boolean;
-
-  /**
-   * Parse a single-text response into the translated string. `attempt` is the
-   * prompt-variant index that produced `output`, so parsing can be specific to
-   * that variant (e.g. stripping a wrapper tag the variant's prompt used).
-   */
-  parseSingleResponse(output: string, original: string, attempt: number): string;
+  parseSingleResponse(output: string, original: string, attempt: number): SingleResult;
 }
+
+/** Outcome of interpreting one single-text model output. */
+export type SingleResult =
+  /** Usable translation. */
+  | { status: 'ok'; text: string }
+  /** Not translatable (e.g. empty); the runner keeps the original text. */
+  | { status: 'skip' }
+  /** Broken output; the runner may fall back. `text` is a debug-only reason. */
+  | { status: 'error'; text: string };
 
 /**
  * A function provided by the provider that sends a single prompt string to the

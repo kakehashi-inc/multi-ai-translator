@@ -53,7 +53,6 @@ export function translatePage(): void {
   });
 }
 
-
 // Initialize on load
 if (typeof window !== 'undefined') {
   initI18n();
