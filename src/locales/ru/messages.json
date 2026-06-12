@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Перевод веб-страниц с помощью нескольких ИИ-провайдеров (OpenAI, Anthropic (Claude), Gemini, Ollama)",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "Перевести выделенное",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "Перевести страницу",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "Ни один провайдер не включён. Открываются настройки.",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "Настройки",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "Провайдеры",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "Общие настройки",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "Настройки интерфейса",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "Настройки ИИ-провайдеров",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "Общие настройки",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "Настройки интерфейса",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "Провайдер",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "Язык перевода",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "API-ключ",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "Модель",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "Температура",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "Макс. токенов",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "Хост",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "Базовый URL",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "Язык оригинала по умолчанию",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "Язык перевода по умолчанию",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "Тема",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "Показывать оригинальный текст при наведении",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "Выделять переведённое содержимое",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "Авто",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "Светлая",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "Тёмная",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "Перевести страницу",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "Перевести выделенное",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "Восстановить оригинальный текст",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "Отменить перевод",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "Настройки",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "Сохранить настройки",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "Сбросить до значений по умолчанию",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "Экспортировать настройки",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "Импортировать настройки",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "Получить модели",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "Размер пакета (элементов на запрос)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "Размер пакета (макс. символов на запрос)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "Язык оригинала",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "Перевод выделенного",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "Оригинал",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "Перевод",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "Провайдер",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "Оригинальный текст",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "Перевод",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "Поиск переводимого текста на странице…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "Найдено блоков текста для перевода: $COUNT$…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "Перевод... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "Перевод завершён: обработано пакетов — $COUNT$.",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "Завершено: обработано пакетов — $BATCHES$. Не удалось перевести блоков: $ERRORS$.",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "Перевод отменён.",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "Не удалось инициализировать всплывающее окно",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "Пожалуйста, выберите провайдера",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "Включённые провайдеры не найдены. Включите один из них в настройках.",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "Перед переводом выделите текст на странице.",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "Перевод страницы...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "Перевод выделенного...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "Подготовка перевода…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "Наложение с переводом выделенного открыто",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "Не удалось выполнить перевод. Проверьте настройки провайдера.",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "Перевод страницы начат",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "Не удалось выполнить перевод: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "Оригинальное содержимое восстановлено",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "Не удалось восстановить: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "Обычная веб-страница не в фокусе. Щёлкните страницу, которую хотите перевести, и попробуйте снова.",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "Путь к скрипту переводчика отсутствует в манифесте.",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "Эта страница не разрешает расширения (например, chrome:// или Веб-магазин). Попробуйте другую страницу или перезагрузите её после включения расширения.",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "Переводчик пока не удалось загрузить на этой странице. Перезагрузите вкладку и попробуйте снова.",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "Среда выполнения не поддерживает API для внедрения скриптов.",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "На этой странице не найдено текста для перевода.",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "Неизвестное действие: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "Провайдер $PROVIDER$ не включён",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "Нет доступной активной вкладки",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "Загрузка...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "Не удалось загрузить настройки",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "Настройки успешно сохранены",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "Не удалось сохранить настройки",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "Вы уверены, что хотите сбросить все настройки до значений по умолчанию?",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "Настройки сброшены до значений по умолчанию",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "Не удалось сбросить настройки",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "Настройки экспортированы",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "Не удалось экспортировать настройки",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "Настройки успешно импортированы",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "Не удалось импортировать настройки",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "Получение моделей от $PROVIDER$...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "Найдено моделей: $COUNT$",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "Модели не найдены. Введите модель вручную.",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "Не удалось получить модели",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "Включить $PROVIDER$",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "Переключить видимость",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(необязательно)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "Автоопределение",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "Включите провайдера в настройках",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "Нет доступной вкладки.",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "Недопустимый JSON настроек",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "Для получения моделей необходим API-ключ $PROVIDER$.",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "Для получения моделей от провайдеров $PROVIDER$ необходим базовый URL.",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}

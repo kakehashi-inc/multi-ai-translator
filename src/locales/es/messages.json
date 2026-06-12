@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Traduce páginas web usando varios proveedores de IA (OpenAI, Anthropic (Claude), Gemini, Ollama)",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "Traducir selección",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "Traducir página",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "No hay ningún proveedor habilitado. Abriendo la configuración.",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "Configuración",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "Proveedores",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "Configuración común",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "Configuración de la interfaz",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "Configuración de proveedores de IA",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "Configuración común",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "Configuración de la interfaz",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "Proveedor",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "Idioma de destino",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "Clave de API",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "Modelo",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "Temperatura",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "Tokens máximos",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "Host",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "URL base",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "Idioma de origen predeterminado",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "Idioma de destino predeterminado",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "Tema",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "Mostrar el texto original al pasar el cursor",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "Resaltar el contenido traducido",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "Automático",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "Claro",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "Oscuro",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "Traducir página",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "Traducir selección",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "Restaurar texto original",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "Cancelar traducción",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "Configuración",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "Guardar configuración",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "Restablecer valores predeterminados",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "Exportar configuración",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "Importar configuración",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "Obtener modelos",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "Tamaño del lote (elementos por solicitud)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "Tamaño del lote (caracteres máximos por solicitud)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "Idioma de origen",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "Traducción de la selección",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "Origen",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "Destino",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "Proveedor",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "Texto original",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "Traducción",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "Analizando la página en busca de texto traducible…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "Se encontraron $COUNT$ bloques de texto para traducir…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "Traduciendo... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "Traducción completada: se procesaron $COUNT$ lotes.",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "Completado: se procesaron $BATCHES$ lotes. Fallaron $ERRORS$ bloques.",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "Traducción cancelada.",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "No se pudo inicializar la ventana emergente",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "Selecciona un proveedor",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "No se encontraron proveedores habilitados. Habilita uno en la configuración.",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "Selecciona texto en la página antes de traducir.",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "Traduciendo la página...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "Traduciendo la selección...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "Preparando la traducción…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "Se abrió la superposición de traducción de la selección",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "La traducción falló. Comprueba la configuración del proveedor.",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "Se inició la traducción de la página",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "La traducción falló: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "Se restauró el contenido original",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "La restauración falló: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "No hay ninguna página web normal enfocada. Haz clic en la página que quieres traducir e inténtalo de nuevo.",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "Falta la ruta del script del traductor en el manifiesto.",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "Esta página no permite extensiones (por ejemplo, chrome:// o la Web Store). Prueba con otra página o vuelve a cargarla después de habilitar la extensión.",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "El traductor aún no se pudo cargar en esta página. Vuelve a cargar la pestaña e inténtalo de nuevo.",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "El entorno de ejecución no admite las API de inyección de scripts.",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "No se encontró texto traducible en esta página.",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "Acción desconocida: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "El proveedor $PROVIDER$ no está habilitado",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "No hay ninguna pestaña activa disponible",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "Cargando...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "No se pudo cargar la configuración",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "La configuración se guardó correctamente",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "No se pudo guardar la configuración",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "¿Seguro que quieres restablecer toda la configuración a los valores predeterminados?",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "La configuración se restableció a los valores predeterminados",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "No se pudo restablecer la configuración",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "Configuración exportada",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "No se pudo exportar la configuración",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "La configuración se importó correctamente",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "No se pudo importar la configuración",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "Obteniendo modelos de $PROVIDER$...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "Se encontraron $COUNT$ modelos",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "No se encontraron modelos. Introduce un modelo manualmente.",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "No se pudieron obtener los modelos",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "Habilitar $PROVIDER$",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "Alternar visibilidad",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(opcional)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "Detección automática",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "Habilita un proveedor en la configuración",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "No hay ninguna pestaña accesible.",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "JSON de configuración no válido",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "Se requiere la clave de API de $PROVIDER$ para obtener los modelos.",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "Se requiere la URL base para obtener modelos de proveedores $PROVIDER$.",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}

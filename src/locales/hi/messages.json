@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "कई AI प्रदाताओं (OpenAI, Anthropic (Claude), Gemini, Ollama) का उपयोग करके वेब पेजों का अनुवाद करें",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "चयन का अनुवाद करें",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "पेज का अनुवाद करें",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "कोई प्रदाता सक्षम नहीं है। सेटिंग्स खोली जा रही हैं।",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "सेटिंग्स",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "प्रदाता",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "सामान्य सेटिंग्स",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "UI सेटिंग्स",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "AI प्रदाता सेटिंग्स",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "सामान्य सेटिंग्स",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "UI सेटिंग्स",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "प्रदाता",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "लक्ष्य भाषा",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "API कुंजी",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "मॉडल",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "तापमान",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "अधिकतम टोकन",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "होस्ट",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "बेस URL",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "डिफ़ॉल्ट स्रोत भाषा",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "डिफ़ॉल्ट लक्ष्य भाषा",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "थीम",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "होवर करने पर मूल टेक्स्ट दिखाएं",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "अनुवादित सामग्री को हाइलाइट करें",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "स्वतः",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "हल्का",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "गहरा",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "पेज का अनुवाद करें",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "चयन का अनुवाद करें",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "मूल टेक्स्ट पुनर्स्थापित करें",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "अनुवाद रद्द करें",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "सेटिंग्स",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "सेटिंग्स सहेजें",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "डिफ़ॉल्ट पर रीसेट करें",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "सेटिंग्स निर्यात करें",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "सेटिंग्स आयात करें",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "मॉडल प्राप्त करें",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "बैच आकार (प्रति अनुरोध आइटम)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "बैच आकार (प्रति अनुरोध अधिकतम अक्षर)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "स्रोत भाषा",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "चयन अनुवाद",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "स्रोत",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "लक्ष्य",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "प्रदाता",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "मूल टेक्स्ट",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "अनुवाद",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "अनुवाद योग्य टेक्स्ट के लिए पेज स्कैन किया जा रहा है…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "अनुवाद के लिए $COUNT$ टेक्स्ट ब्लॉक मिले…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "अनुवाद किया जा रहा है... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "अनुवाद पूर्ण हुआ: $COUNT$ बैच संसाधित किए गए।",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "पूर्ण हुआ: $BATCHES$ बैच संसाधित किए गए। $ERRORS$ ब्लॉक विफल रहे।",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "अनुवाद रद्द किया गया।",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "पॉपअप आरंभ करने में विफल",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "कृपया एक प्रदाता चुनें",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "कोई सक्षम प्रदाता नहीं मिला। कृपया सेटिंग्स में एक सक्षम करें।",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "अनुवाद करने से पहले पेज पर टेक्स्ट चुनें।",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "पेज का अनुवाद किया जा रहा है...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "चयन का अनुवाद किया जा रहा है...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "अनुवाद तैयार किया जा रहा है…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "चयन अनुवाद ओवरले खोला गया",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "अनुवाद विफल रहा। कृपया प्रदाता सेटिंग्स जांचें।",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "पेज अनुवाद प्रारंभ हुआ",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "अनुवाद विफल रहा: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "मूल सामग्री पुनर्स्थापित की गई",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "पुनर्स्थापना विफल रही: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "कोई सामान्य वेब पेज फ़ोकस में नहीं है। कृपया जिस पेज का अनुवाद करना चाहते हैं उस पर क्लिक करें और पुनः प्रयास करें।",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "मेनिफ़ेस्ट में अनुवादक स्क्रिप्ट पथ अनुपस्थित है।",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "यह पेज एक्सटेंशन की अनुमति नहीं देता (जैसे chrome:// या Web Store)। कृपया कोई अन्य पेज आज़माएं या एक्सटेंशन सक्षम करने के बाद पुनः लोड करें।",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "अनुवादक अभी तक इस पेज पर लोड नहीं हो सका। कृपया टैब पुनः लोड करें और पुनः प्रयास करें।",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "रनटाइम स्क्रिप्ट इंजेक्शन API का समर्थन नहीं करता।",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "इस पेज पर कोई अनुवाद योग्य टेक्स्ट नहीं मिला।",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "अज्ञात क्रिया: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "प्रदाता $PROVIDER$ सक्षम नहीं है",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "कोई सक्रिय टैब उपलब्ध नहीं है",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "लोड हो रहा है...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "सेटिंग्स लोड करने में विफल",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "सेटिंग्स सफलतापूर्वक सहेजी गईं",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "सेटिंग्स सहेजने में विफल",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "क्या आप वाकई सभी सेटिंग्स को डिफ़ॉल्ट पर रीसेट करना चाहते हैं?",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "सेटिंग्स डिफ़ॉल्ट पर रीसेट की गईं",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "सेटिंग्स रीसेट करने में विफल",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "सेटिंग्स निर्यात की गईं",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "सेटिंग्स निर्यात करने में विफल",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "सेटिंग्स सफलतापूर्वक आयात की गईं",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "सेटिंग्स आयात करने में विफल",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "$PROVIDER$ से मॉडल प्राप्त किए जा रहे हैं...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "$COUNT$ मॉडल मिले",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "कोई मॉडल नहीं मिला। कृपया मॉडल मैन्युअल रूप से दर्ज करें।",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "मॉडल प्राप्त करने में विफल",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "$PROVIDER$ सक्षम करें",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "दृश्यता टॉगल करें",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(वैकल्पिक)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "स्वतः पहचान",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "सेटिंग्स में एक प्रदाता सक्षम करें",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "कोई सुलभ टैब नहीं।",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "अमान्य सेटिंग्स JSON",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "मॉडल प्राप्त करने के लिए $PROVIDER$ API कुंजी आवश्यक है।",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "$PROVIDER$ प्रदाताओं से मॉडल प्राप्त करने के लिए बेस URL आवश्यक है।",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}

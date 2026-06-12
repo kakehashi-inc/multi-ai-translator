@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "使用多个 AI 服务商（OpenAI、Anthropic (Claude)、Gemini、Ollama）翻译网页",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "翻译所选内容",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "翻译页面",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "未启用任何服务商。正在打开设置。",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "设置",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "服务商",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "通用设置",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "界面设置",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "AI 服务商设置",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "通用设置",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "界面设置",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "服务商",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "目标语言",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "API 密钥",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "模型",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "温度",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "最大令牌数",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "主机",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "基础 URL",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "默认源语言",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "默认目标语言",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "主题",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "悬停时显示原文",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "高亮显示已翻译内容",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "自动",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "浅色",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "深色",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "翻译页面",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "翻译所选内容",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "还原原文",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "取消翻译",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "设置",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "保存设置",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "恢复默认设置",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "导出设置",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "导入设置",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "获取模型",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "批处理大小（每次请求的条目数）",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "批处理大小（每次请求的最大字符数）",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "源语言",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "所选内容翻译",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "源语言",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "目标语言",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "服务商",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "原文",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "翻译",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "正在扫描页面中的可翻译文本…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "找到 $COUNT$ 个待翻译的文本块…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "正在翻译... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "翻译完成：已处理 $COUNT$ 个批次。",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "已完成：已处理 $BATCHES$ 个批次。$ERRORS$ 个文本块失败。",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "翻译已取消。",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "弹出窗口初始化失败",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "请选择一个服务商",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "未找到已启用的服务商。请在设置中启用一个。",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "翻译前请先在页面上选择文本。",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "正在翻译页面...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "正在翻译所选内容...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "正在准备翻译…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "所选内容翻译浮层已打开",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "翻译失败。请检查服务商设置。",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "页面翻译已开始",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "翻译失败：$MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "已还原原始内容",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "还原失败：$MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "当前未聚焦于常规网页。请点击您想翻译的页面后重试。",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "清单文件中缺少翻译器脚本路径。",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "此页面不允许使用扩展程序（例如 chrome:// 或 Web 应用商店）。请尝试其他页面，或在启用扩展程序后重新加载。",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "翻译器尚未在此页面上加载。请重新加载该标签页后重试。",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "运行时不支持脚本注入 API。",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "此页面上未找到可翻译的文本。",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "未知操作：$ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "服务商 $PROVIDER$ 未启用",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "没有可用的活动标签页",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "正在加载...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "加载设置失败",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "设置保存成功",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "保存设置失败",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "确定要将所有设置恢复为默认值吗？",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "设置已恢复为默认值",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "重置设置失败",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "设置已导出",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "导出设置失败",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "设置导入成功",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "导入设置失败",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "正在从 $PROVIDER$ 获取模型...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "找到 $COUNT$ 个模型",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "未找到模型。请手动输入模型。",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "获取模型失败",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "启用 $PROVIDER$",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "切换可见性",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "（可选）",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "自动检测",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "在设置中启用一个服务商",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "没有可访问的标签页。",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "设置 JSON 无效",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "获取模型需要 $PROVIDER$ API 密钥。",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "从 $PROVIDER$ 服务商获取模型需要基础 URL。",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}

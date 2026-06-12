@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "여러 AI 제공업체(OpenAI, Anthropic (Claude), Gemini, Ollama)를 사용하여 웹 페이지를 번역합니다",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "선택 영역 번역",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "페이지 번역",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "활성화된 제공업체가 없습니다. 설정을 엽니다.",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "설정",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "제공업체",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "공통 설정",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "UI 설정",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "AI 제공업체 설정",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "공통 설정",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "UI 설정",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "제공업체",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "대상 언어",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "API 키",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "모델",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "Temperature",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "최대 토큰",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "호스트",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "기본 URL",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "기본 원본 언어",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "기본 대상 언어",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "테마",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "마우스를 올리면 원문 표시",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "번역된 내용 강조 표시",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "자동",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "라이트",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "다크",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "페이지 번역",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "선택 영역 번역",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "원문 복원",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "번역 취소",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "설정",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "설정 저장",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "기본값으로 재설정",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "설정 내보내기",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "설정 가져오기",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "모델 가져오기",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "배치 크기 (요청당 항목 수)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "배치 크기 (요청당 최대 문자 수)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "원본 언어",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "선택 영역 번역",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "원본",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "대상",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "제공업체",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "원문",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "번역",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "페이지에서 번역 가능한 텍스트를 검색하는 중…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "번역할 텍스트 블록 $COUNT$개를 찾았습니다…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "번역 중... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "번역 완료: $COUNT$개 배치를 처리했습니다.",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "완료: $BATCHES$개 배치를 처리했습니다. $ERRORS$개 블록에 실패했습니다.",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "번역이 취소되었습니다.",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "팝업 초기화에 실패했습니다",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "제공업체를 선택하세요",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "활성화된 제공업체가 없습니다. 설정에서 하나를 활성화하세요.",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "번역하기 전에 페이지에서 텍스트를 선택하세요.",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "페이지 번역 중...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "선택 영역 번역 중...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "번역 준비 중…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "선택 영역 번역 오버레이가 열렸습니다",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "번역에 실패했습니다. 제공업체 설정을 확인하세요.",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "페이지 번역이 시작되었습니다",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "번역 실패: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "원본 내용이 복원되었습니다",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "복원 실패: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "일반 웹 페이지가 활성화되어 있지 않습니다. 번역하려는 페이지를 클릭한 후 다시 시도하세요.",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "매니페스트에 번역기 스크립트 경로가 없습니다.",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "이 페이지는 확장 프로그램을 허용하지 않습니다(예: chrome:// 또는 웹 스토어). 다른 페이지를 시도하거나 확장 프로그램을 활성화한 후 새로 고침하세요.",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "아직 이 페이지에서 번역기를 로드할 수 없습니다. 탭을 새로 고침한 후 다시 시도하세요.",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "런타임이 스크립트 삽입 API를 지원하지 않습니다.",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "이 페이지에서 번역 가능한 텍스트를 찾을 수 없습니다.",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "알 수 없는 작업: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "제공업체 $PROVIDER$이(가) 활성화되어 있지 않습니다",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "사용 가능한 활성 탭이 없습니다",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "로드 중...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "설정을 불러오지 못했습니다",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "설정이 저장되었습니다",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "설정을 저장하지 못했습니다",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "모든 설정을 기본값으로 재설정하시겠습니까?",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "설정이 기본값으로 재설정되었습니다",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "설정을 재설정하지 못했습니다",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "설정을 내보냈습니다",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "설정을 내보내지 못했습니다",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "설정을 가져왔습니다",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "설정을 가져오지 못했습니다",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "$PROVIDER$에서 모델을 가져오는 중...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "모델 $COUNT$개를 찾았습니다",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "모델을 찾을 수 없습니다. 모델을 직접 입력하세요.",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "모델을 가져오지 못했습니다",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "$PROVIDER$ 활성화",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "표시 전환",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(선택 사항)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "자동 감지",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "설정에서 제공업체를 활성화하세요",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "접근 가능한 탭이 없습니다.",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "잘못된 설정 JSON입니다",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "모델을 가져오려면 $PROVIDER$ API 키가 필요합니다.",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "$PROVIDER$ 제공업체에서 모델을 가져오려면 기본 URL이 필요합니다.",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}

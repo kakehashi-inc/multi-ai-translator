@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "ترجمة صفحات الويب باستخدام عدة مزودي ذكاء اصطناعي (OpenAI، Anthropic (Claude)، Gemini، Ollama)",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "ترجمة التحديد",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "ترجمة الصفحة",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "لا يوجد مزود مفعّل. جارٍ فتح الإعدادات.",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "الإعدادات",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "المزودون",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "الإعدادات العامة",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "إعدادات الواجهة",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "إعدادات مزود الذكاء الاصطناعي",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "الإعدادات العامة",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "إعدادات الواجهة",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "المزود",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "اللغة الهدف",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "مفتاح API",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "النموذج",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "درجة الحرارة",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "الحد الأقصى للرموز",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "المضيف",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "عنوان URL الأساسي",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "لغة المصدر الافتراضية",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "اللغة الهدف الافتراضية",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "السمة",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "إظهار النص الأصلي عند التمرير",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "تمييز المحتوى المترجم",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "تلقائي",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "فاتح",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "داكن",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "ترجمة الصفحة",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "ترجمة التحديد",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "استعادة النص الأصلي",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "إلغاء الترجمة",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "الإعدادات",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "حفظ الإعدادات",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "إعادة التعيين إلى الإعدادات الافتراضية",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "تصدير الإعدادات",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "استيراد الإعدادات",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "جلب النماذج",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "حجم الدفعة (عدد العناصر لكل طلب)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "حجم الدفعة (الحد الأقصى للأحرف لكل طلب)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "لغة المصدر",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "ترجمة التحديد",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "المصدر",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "الهدف",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "المزود",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "النص الأصلي",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "الترجمة",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "جارٍ فحص الصفحة بحثًا عن نص قابل للترجمة…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "تم العثور على $COUNT$ كتلة نصية للترجمة…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "جارٍ الترجمة... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "اكتملت الترجمة: تمت معالجة $COUNT$ دفعة.",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "اكتملت: تمت معالجة $BATCHES$ دفعة. فشلت $ERRORS$ كتلة.",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "تم إلغاء الترجمة.",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "فشل في تهيئة النافذة المنبثقة",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "يرجى اختيار مزود",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "لم يتم العثور على مزودين مفعّلين. يرجى تفعيل أحدهم في الإعدادات.",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "حدد نصًا في الصفحة قبل الترجمة.",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "جارٍ ترجمة الصفحة...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "جارٍ ترجمة التحديد...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "جارٍ تحضير الترجمة…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "تم فتح طبقة ترجمة التحديد",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "فشلت الترجمة. يرجى التحقق من إعدادات المزود.",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "بدأت ترجمة الصفحة",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "فشلت الترجمة: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "تمت استعادة المحتوى الأصلي",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "فشلت الاستعادة: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "لا توجد صفحة ويب عادية في التركيز. يرجى النقر على الصفحة التي تريد ترجمتها والمحاولة مرة أخرى.",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "مسار برنامج المترجم النصي مفقود من البيان.",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "هذه الصفحة لا تسمح بالإضافات (مثل chrome:// أو متجر الويب). يرجى تجربة صفحة أخرى أو إعادة التحميل بعد تفعيل الإضافة.",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "تعذّر تحميل المترجم على هذه الصفحة بعد. يرجى إعادة تحميل علامة التبويب والمحاولة مرة أخرى.",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "بيئة التشغيل لا تدعم واجهات برمجة تطبيقات حقن البرامج النصية.",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "لم يتم العثور على نص قابل للترجمة في هذه الصفحة.",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "إجراء غير معروف: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "المزود $PROVIDER$ غير مفعّل",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "لا توجد علامة تبويب نشطة متاحة",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "جارٍ التحميل...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "فشل تحميل الإعدادات",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "تم حفظ الإعدادات بنجاح",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "فشل حفظ الإعدادات",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "هل أنت متأكد من أنك تريد إعادة تعيين جميع الإعدادات إلى الإعدادات الافتراضية؟",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "تمت إعادة تعيين الإعدادات إلى الإعدادات الافتراضية",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "فشل إعادة تعيين الإعدادات",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "تم تصدير الإعدادات",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "فشل تصدير الإعدادات",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "تم استيراد الإعدادات بنجاح",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "فشل استيراد الإعدادات",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "جارٍ جلب النماذج من $PROVIDER$...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "تم العثور على $COUNT$ نموذج",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "لم يتم العثور على نماذج. يرجى إدخال نموذج يدويًا.",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "فشل جلب النماذج",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "تفعيل $PROVIDER$",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "تبديل الرؤية",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(اختياري)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "كشف تلقائي",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "فعّل مزودًا في الإعدادات",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "لا توجد علامة تبويب يمكن الوصول إليها.",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "إعدادات JSON غير صالحة",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "مفتاح API الخاص بـ $PROVIDER$ مطلوب لجلب النماذج.",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "عنوان URL الأساسي مطلوب لجلب النماذج من مزودي $PROVIDER$.",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}
