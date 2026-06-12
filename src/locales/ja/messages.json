@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "拡張機能の名前"
+  },
+  "extensionDescription": {
+    "message": "複数のAIプロバイダ（OpenAI、Anthropic（Claude）、Gemini、Ollama）を使用してWebページを翻訳",
+    "description": "拡張機能の説明"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "選択範囲を翻訳",
+    "description": "選択範囲を翻訳するコンテキストメニューのタイトル"
+  },
+  "contextMenuTranslatePage": {
+    "message": "ページを翻訳",
+    "description": "現在のページを翻訳するコンテキストメニューのタイトル"
+  },
+  "notificationOpeningSettings": {
+    "message": "有効なプロバイダがありません。設定画面を開きます。",
+    "description": "ページ翻訳のコンテキストメニューを実行したが有効なプロバイダがない場合に表示する通知"
+  },
+  "settingsSubtitle": {
+    "message": "設定",
+    "description": "設定ページのサブタイトル"
+  },
+  "tabProviders": {
+    "message": "プロバイダ",
+    "description": "プロバイダタブ"
+  },
+  "tabCommon": {
+    "message": "共通設定",
+    "description": "共通設定タブ"
+  },
+  "tabUI": {
+    "message": "UI設定",
+    "description": "UI設定タブ"
+  },
+  "headingProviders": {
+    "message": "AIプロバイダ設定",
+    "description": "プロバイダセクションの見出し"
+  },
+  "headingCommon": {
+    "message": "共通設定",
+    "description": "共通設定の見出し"
+  },
+  "headingUI": {
+    "message": "UI設定",
+    "description": "UI設定の見出し"
+  },
+  "labelProvider": {
+    "message": "プロバイダ",
+    "description": "プロバイダラベル"
+  },
+  "labelTargetLanguage": {
+    "message": "翻訳先言語",
+    "description": "翻訳先言語ラベル"
+  },
+  "labelAPIKey": {
+    "message": "APIキー",
+    "description": "APIキーラベル"
+  },
+  "labelModel": {
+    "message": "モデル",
+    "description": "モデルラベル"
+  },
+  "labelTemperature": {
+    "message": "温度",
+    "description": "温度ラベル"
+  },
+  "labelMaxTokens": {
+    "message": "最大トークン数",
+    "description": "最大トークン数ラベル"
+  },
+  "labelHost": {
+    "message": "ホスト",
+    "description": "ホストラベル"
+  },
+  "labelBaseURL": {
+    "message": "ベースURL",
+    "description": "ベースURLラベル"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "デフォルト元言語",
+    "description": "デフォルト元言語ラベル"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "デフォルト翻訳先言語",
+    "description": "デフォルト翻訳先言語ラベル"
+  },
+  "labelTheme": {
+    "message": "テーマ",
+    "description": "テーマラベル"
+  },
+  "labelShowOriginalText": {
+    "message": "ホバー時に元のテキストを表示",
+    "description": "元のテキスト表示ラベル"
+  },
+  "labelHighlightTranslated": {
+    "message": "翻訳されたコンテンツを強調表示",
+    "description": "翻訳済み強調表示ラベル"
+  },
+  "themeAuto": {
+    "message": "自動",
+    "description": "自動テーマオプション"
+  },
+  "themeLight": {
+    "message": "ライト",
+    "description": "ライトテーマオプション"
+  },
+  "themeDark": {
+    "message": "ダーク",
+    "description": "ダークテーマオプション"
+  },
+  "btnTranslatePage": {
+    "message": "ページを翻訳",
+    "description": "ページ翻訳ボタン"
+  },
+  "btnTranslateSelection": {
+    "message": "選択範囲を翻訳",
+    "description": "選択範囲翻訳ボタン"
+  },
+  "btnRestore": {
+    "message": "原文に戻す",
+    "description": "原文に戻すボタン"
+  },
+  "btnCancelTranslation": {
+    "message": "翻訳をキャンセル",
+    "description": "現在の翻訳をキャンセルするボタン"
+  },
+  "btnSettings": {
+    "message": "設定",
+    "description": "設定ボタン"
+  },
+  "btnSave": {
+    "message": "設定を保存",
+    "description": "保存ボタン"
+  },
+  "btnReset": {
+    "message": "デフォルトに戻す",
+    "description": "リセットボタン"
+  },
+  "btnExport": {
+    "message": "設定をエクスポート",
+    "description": "エクスポートボタン"
+  },
+  "btnImport": {
+    "message": "設定をインポート",
+    "description": "インポートボタン"
+  },
+  "btnFetchModels": {
+    "message": "モデル取得",
+    "description": "モデル取得ボタン"
+  },
+  "labelBatchMaxItems": {
+    "message": "バッチサイズ（リクエストあたりの項目数）",
+    "description": "バッチ最大項目数ラベル"
+  },
+  "labelBatchMaxChars": {
+    "message": "バッチサイズ（リクエストあたりの最大文字数）",
+    "description": "バッチ最大文字数ラベル"
+  },
+  "labelSourceLanguage": {
+    "message": "元言語",
+    "description": "元言語ラベル"
+  },
+  "selectionPopupTitle": {
+    "message": "選択範囲の翻訳",
+    "description": "選択範囲翻訳専用ポップアップのタイトル"
+  },
+  "labelSelectionSource": {
+    "message": "元言語",
+    "description": "選択範囲ポップアップの元言語ラベル"
+  },
+  "labelSelectionTarget": {
+    "message": "翻訳先",
+    "description": "選択範囲ポップアップの翻訳先ラベル"
+  },
+  "labelSelectionProvider": {
+    "message": "プロバイダ",
+    "description": "選択範囲ポップアップのプロバイダ表示"
+  },
+  "labelSelectionOriginal": {
+    "message": "原文",
+    "description": "選択範囲の原文見出し"
+  },
+  "labelSelectionResult": {
+    "message": "翻訳結果",
+    "description": "選択範囲の翻訳結果見出し"
+  },
+  "statusScanning": {
+    "message": "翻訳可能なテキストをスキャン中…",
+    "description": "ページをスキャン中のステータスメッセージ"
+  },
+  "statusFoundBlocks": {
+    "message": "翻訳対象のテキストブロック $COUNT$ 個を検出しました…",
+    "description": "ブロックが見つかったときのステータスメッセージ",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "翻訳中... ( $CURRENT$ / $TOTAL$ )",
+    "description": "翻訳中のステータスメッセージ",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "翻訳完了: $COUNT$ バッチ処理済み。",
+    "description": "翻訳が完了したときのステータスメッセージ",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "完了: $BATCHES$ バッチ処理済み。$ERRORS$ ブロックが失敗しました。",
+    "description": "エラーがある場合の完了ステータスメッセージ",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "翻訳をキャンセルしました。",
+    "description": "ユーザーが翻訳をキャンセルしたときのステータスメッセージ"
+  },
+  "errorFailedToInitialize": {
+    "message": "ポップアップの初期化に失敗しました",
+    "description": "ポップアップの初期化が失敗したときのエラーメッセージ"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "プロバイダを選択してください",
+    "description": "プロバイダが選択されていないときのエラーメッセージ"
+  },
+  "errorNoEnabledProviders": {
+    "message": "有効なプロバイダがありません。設定から有効化してください。",
+    "description": "利用可能なプロバイダがない場合のエラーメッセージ"
+  },
+  "errorNoSelectionText": {
+    "message": "翻訳したいテキストをページ上で選択してください。",
+    "description": "選択範囲がない場合のエラーメッセージ"
+  },
+  "statusTranslatingPage": {
+    "message": "ページを翻訳中...",
+    "description": "ページを翻訳中のステータスメッセージ"
+  },
+  "statusTranslatingSelection": {
+    "message": "選択範囲を翻訳中...",
+    "description": "選択範囲を翻訳中のステータスメッセージ"
+  },
+  "statusSelectionPreparing": {
+    "message": "翻訳の準備中…",
+    "description": "選択範囲翻訳を開始する前のステータス"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "選択範囲の翻訳オーバーレイを表示しました",
+    "description": "選択範囲オーバーレイを表示した際のステータス"
+  },
+  "errorTranslationFailed": {
+    "message": "翻訳に失敗しました。プロバイダの設定を確認してください。",
+    "description": "翻訳が失敗したときのエラーメッセージ"
+  },
+  "statusPageTranslationStarted": {
+    "message": "ページの翻訳を開始しました",
+    "description": "ページの翻訳が開始されたときのステータスメッセージ"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "翻訳に失敗しました: $MESSAGE$",
+    "description": "特定のメッセージとともに翻訳が失敗したときのエラーメッセージ",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "ネットワークエラー"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "元のコンテンツを復元しました",
+    "description": "元のコンテンツが復元されたときのステータスメッセージ"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "復元に失敗しました: $MESSAGE$",
+    "description": "特定のメッセージとともに復元が失敗したときのエラーメッセージ",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "ネットワークエラー"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "通常のWebページがフォーカスされていません。翻訳したいページをクリックしてから再度お試しください。",
+    "description": "通常のWebページがフォーカスされていないときのエラーメッセージ"
+  },
+  "errorScriptPathMissing": {
+    "message": "マニフェストから翻訳スクリプトのパスが見つかりません。",
+    "description": "スクリプトパスが見つからないときのエラーメッセージ"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "このページは拡張機能を許可していません（例: chrome:// や Web Store）。別のページをお試しになるか、拡張機能を有効にした後にページを再読み込みしてください。",
+    "description": "ページが拡張機能をブロックしているときのエラーメッセージ"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "このページでは翻訳機能を読み込めませんでした。タブを再読み込みしてから再度お試しください。",
+    "description": "翻訳機能を読み込めなかったときのエラーメッセージ"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "ランタイムがスクリプトインジェクションAPIをサポートしていません。",
+    "description": "ランタイムがスクリプトインジェクションをサポートしていないときのエラーメッセージ"
+  },
+  "errorNoTranslatableText": {
+    "message": "このページに翻訳可能なテキストが見つかりませんでした。",
+    "description": "翻訳可能なテキストが見つからないときのエラーメッセージ"
+  },
+  "errorUnknownAction": {
+    "message": "不明なアクション: $ACTION$",
+    "description": "不明なアクションのエラーメッセージ",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "プロバイダ $PROVIDER$ が有効になっていません",
+    "description": "プロバイダが有効になっていないときのエラーメッセージ",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "アクティブなタブがありません",
+    "description": "アクティブなタブがないときのエラーメッセージ"
+  },
+  "statusLoading": {
+    "message": "読み込み中...",
+    "description": "汎用の読み込み表示"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "設定の読み込みに失敗しました",
+    "description": "設定の読み込みに失敗したときに表示するメッセージ"
+  },
+  "statusSettingsSaved": {
+    "message": "設定を保存しました",
+    "description": "設定の保存後に表示する確認メッセージ"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "設定の保存に失敗しました",
+    "description": "設定の保存に失敗したときに表示するメッセージ"
+  },
+  "confirmResetSettings": {
+    "message": "すべての設定を初期状態に戻してもよろしいですか？",
+    "description": "設定リセット前に表示する確認メッセージ"
+  },
+  "statusSettingsReset": {
+    "message": "設定を初期状態に戻しました",
+    "description": "設定をリセットした後に表示する確認メッセージ"
+  },
+  "statusFailedToResetSettings": {
+    "message": "設定のリセットに失敗しました",
+    "description": "設定のリセットに失敗したときに表示するメッセージ"
+  },
+  "statusSettingsExported": {
+    "message": "設定をエクスポートしました",
+    "description": "設定のエクスポート後に表示する確認メッセージ"
+  },
+  "statusFailedToExportSettings": {
+    "message": "設定のエクスポートに失敗しました",
+    "description": "設定のエクスポートに失敗したときに表示するメッセージ"
+  },
+  "statusSettingsImported": {
+    "message": "設定をインポートしました",
+    "description": "設定のインポート後に表示する確認メッセージ"
+  },
+  "statusFailedToImportSettings": {
+    "message": "設定のインポートに失敗しました",
+    "description": "設定のインポートに失敗したときに表示するメッセージ"
+  },
+  "statusFetchingModels": {
+    "message": "$PROVIDER$ からモデルを取得しています...",
+    "description": "プロバイダからモデルを取得中に表示するメッセージ",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "$COUNT$ 個のモデルが見つかりました",
+    "description": "モデル取得後に表示するメッセージ",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "モデルが見つかりませんでした。手動で入力してください。",
+    "description": "モデル取得結果が空のときに表示するメッセージ"
+  },
+  "statusFailedToFetchModels": {
+    "message": "モデルの取得に失敗しました",
+    "description": "モデル取得に失敗したときに表示するメッセージ"
+  },
+  "labelEnableProvider": {
+    "message": "$PROVIDER$ を有効化",
+    "description": "プロバイダ有効化トグルのアクセシブルラベル",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "表示を切り替え",
+    "description": "パスワード表示切り替えボタンのアクセシブルラベル"
+  },
+  "labelOptional": {
+    "message": "(任意)",
+    "description": "任意フィールドのラベル末尾に付与する文言"
+  },
+  "languageAutoDetect": {
+    "message": "自動検出",
+    "description": "ソース言語の自動検出オプション"
+  },
+  "popupHelperEnableProvider": {
+    "message": "設定でプロバイダを有効化してください",
+    "description": "ポップアップで有効なプロバイダがないときに表示するヘルパーテキスト"
+  },
+  "errorNoAccessibleTab": {
+    "message": "アクセス可能なタブがありません。",
+    "description": "ポップアップからアクセス可能なタブが見つからないときのエラー"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "設定JSONの形式が正しくありません",
+    "description": "インポート設定のJSONが無効なときに表示するエラー"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "モデル取得には $PROVIDER$ のAPIキーが必要です。",
+    "description": "モデル取得時にAPIキーが未設定のときに表示するエラー",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "$PROVIDER$ プロバイダからモデルを取得するにはベースURLが必要です。",
+    "description": "モデル取得時にベースURLが未設定のときに表示するエラー",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI互換"
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__serena",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "SemanticSearch",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(glob:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn build:chrome)",
+      "Bash(yarn build:firefox)",
+      "Bash(yarn build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,484 @@
+{
+  "extensionName": {
+    "message": "Multi AI Translator",
+    "description": "Name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Translate web pages using multiple AI providers (OpenAI, Anthropic (Claude), Gemini, Ollama)",
+    "description": "Description of the extension"
+  },
+  "contextMenuTranslateSelection": {
+    "message": "Translate selection",
+    "description": "Context menu title for translating selected text"
+  },
+  "contextMenuTranslatePage": {
+    "message": "Translate page",
+    "description": "Context menu title for translating the current page"
+  },
+  "notificationOpeningSettings": {
+    "message": "No provider is enabled. Opening settings.",
+    "description": "Notification shown when context menu translate-page is invoked but no provider is enabled"
+  },
+  "settingsSubtitle": {
+    "message": "Settings",
+    "description": "Settings page subtitle"
+  },
+  "tabProviders": {
+    "message": "Providers",
+    "description": "Providers tab"
+  },
+  "tabCommon": {
+    "message": "Common Settings",
+    "description": "Common settings tab"
+  },
+  "tabUI": {
+    "message": "UI Settings",
+    "description": "UI settings tab"
+  },
+  "headingProviders": {
+    "message": "AI Provider Settings",
+    "description": "Providers section heading"
+  },
+  "headingCommon": {
+    "message": "Common Settings",
+    "description": "Common settings heading"
+  },
+  "headingUI": {
+    "message": "UI Settings",
+    "description": "UI settings heading"
+  },
+  "labelProvider": {
+    "message": "Provider",
+    "description": "Provider label"
+  },
+  "labelTargetLanguage": {
+    "message": "Target Language",
+    "description": "Target language label"
+  },
+  "labelAPIKey": {
+    "message": "API Key",
+    "description": "API key label"
+  },
+  "labelModel": {
+    "message": "Model",
+    "description": "Model label"
+  },
+  "labelTemperature": {
+    "message": "Temperature",
+    "description": "Temperature label"
+  },
+  "labelMaxTokens": {
+    "message": "Max Tokens",
+    "description": "Max tokens label"
+  },
+  "labelHost": {
+    "message": "Host",
+    "description": "Host label"
+  },
+  "labelBaseURL": {
+    "message": "Base URL",
+    "description": "Base URL label"
+  },
+  "labelDefaultSourceLanguage": {
+    "message": "Default Source Language",
+    "description": "Default source language label"
+  },
+  "labelDefaultTargetLanguage": {
+    "message": "Default Target Language",
+    "description": "Default target language label"
+  },
+  "labelTheme": {
+    "message": "Theme",
+    "description": "Theme label"
+  },
+  "labelShowOriginalText": {
+    "message": "Show original text on hover",
+    "description": "Show original text label"
+  },
+  "labelHighlightTranslated": {
+    "message": "Highlight translated content",
+    "description": "Highlight translated label"
+  },
+  "themeAuto": {
+    "message": "Auto",
+    "description": "Auto theme option"
+  },
+  "themeLight": {
+    "message": "Light",
+    "description": "Light theme option"
+  },
+  "themeDark": {
+    "message": "Dark",
+    "description": "Dark theme option"
+  },
+  "btnTranslatePage": {
+    "message": "Translate Page",
+    "description": "Translate page button"
+  },
+  "btnTranslateSelection": {
+    "message": "Translate Selection",
+    "description": "Translate selection button"
+  },
+  "btnRestore": {
+    "message": "Restore Original Text",
+    "description": "Restore original text button"
+  },
+  "btnCancelTranslation": {
+    "message": "Cancel Translation",
+    "description": "Cancel current translation button"
+  },
+  "btnSettings": {
+    "message": "Settings",
+    "description": "Settings button"
+  },
+  "btnSave": {
+    "message": "Save Settings",
+    "description": "Save button"
+  },
+  "btnReset": {
+    "message": "Reset to Defaults",
+    "description": "Reset button"
+  },
+  "btnExport": {
+    "message": "Export Settings",
+    "description": "Export button"
+  },
+  "btnImport": {
+    "message": "Import Settings",
+    "description": "Import button"
+  },
+  "btnFetchModels": {
+    "message": "Fetch Models",
+    "description": "Fetch models button"
+  },
+  "labelBatchMaxItems": {
+    "message": "Batch size (items per request)",
+    "description": "Batch max items label"
+  },
+  "labelBatchMaxChars": {
+    "message": "Batch size (max characters per request)",
+    "description": "Batch max characters label"
+  },
+  "labelSourceLanguage": {
+    "message": "Source Language",
+    "description": "Source language label"
+  },
+  "selectionPopupTitle": {
+    "message": "Selection Translation",
+    "description": "Title of the dedicated selection translation popup"
+  },
+  "labelSelectionSource": {
+    "message": "Source",
+    "description": "Label for source language in selection popup"
+  },
+  "labelSelectionTarget": {
+    "message": "Target",
+    "description": "Label for target language in selection popup"
+  },
+  "labelSelectionProvider": {
+    "message": "Provider",
+    "description": "Label for provider name in selection popup"
+  },
+  "labelSelectionOriginal": {
+    "message": "Original Text",
+    "description": "Heading for original selection text"
+  },
+  "labelSelectionResult": {
+    "message": "Translation",
+    "description": "Heading for translated selection text"
+  },
+  "statusScanning": {
+    "message": "Scanning page for translatable text…",
+    "description": "Status message when scanning page"
+  },
+  "statusFoundBlocks": {
+    "message": "Found $COUNT$ text blocks to translate…",
+    "description": "Status message when blocks are found",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "100"
+      }
+    }
+  },
+  "statusTranslating": {
+    "message": "Translating... ( $CURRENT$ / $TOTAL$ )",
+    "description": "Status message when translating",
+    "placeholders": {
+      "current": {
+        "content": "$1",
+        "example": "1"
+      },
+      "total": {
+        "content": "$2",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompleted": {
+    "message": "Translation completed: $COUNT$ batches processed.",
+    "description": "Status message when translation is completed",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "20"
+      }
+    }
+  },
+  "statusCompletedWithErrors": {
+    "message": "Completed: $BATCHES$ batches processed. $ERRORS$ blocks failed.",
+    "description": "Status message when translation is completed with errors",
+    "placeholders": {
+      "batches": {
+        "content": "$1",
+        "example": "20"
+      },
+      "errors": {
+        "content": "$2",
+        "example": "2"
+      }
+    }
+  },
+  "statusCancelled": {
+    "message": "Translation cancelled.",
+    "description": "Status message when translation is cancelled by the user"
+  },
+  "errorFailedToInitialize": {
+    "message": "Failed to initialize popup",
+    "description": "Error message when popup initialization fails"
+  },
+  "errorPleaseSelectProvider": {
+    "message": "Please select a provider",
+    "description": "Error message when no provider is selected"
+  },
+  "errorNoEnabledProviders": {
+    "message": "No enabled providers found. Please enable one in Settings.",
+    "description": "Error when no providers are available for translation"
+  },
+  "errorNoSelectionText": {
+    "message": "Select text on the page before translating.",
+    "description": "Error shown when no text is selected for translation"
+  },
+  "statusTranslatingPage": {
+    "message": "Translating page...",
+    "description": "Status message when translating page"
+  },
+  "statusTranslatingSelection": {
+    "message": "Translating selection...",
+    "description": "Status message when translating selection"
+  },
+  "statusSelectionPreparing": {
+    "message": "Preparing translation…",
+    "description": "Status shown before selection translation starts"
+  },
+  "statusSelectionPopupOpened": {
+    "message": "Selection translation overlay opened",
+    "description": "Status message after showing the inline selection overlay"
+  },
+  "errorTranslationFailed": {
+    "message": "Translation failed. Please check provider settings.",
+    "description": "Error message when translation fails"
+  },
+  "statusPageTranslationStarted": {
+    "message": "Page translation started",
+    "description": "Status message when page translation starts"
+  },
+  "errorTranslationFailedWithMessage": {
+    "message": "Translation failed: $MESSAGE$",
+    "description": "Error message when translation fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "statusOriginalContentRestored": {
+    "message": "Original content restored",
+    "description": "Status message when original content is restored"
+  },
+  "errorRestoreFailedWithMessage": {
+    "message": "Restore failed: $MESSAGE$",
+    "description": "Error message when restore fails with specific message",
+    "placeholders": {
+      "message": {
+        "content": "$1",
+        "example": "Network error"
+      }
+    }
+  },
+  "errorNoRegularWebPage": {
+    "message": "No regular web page is focused. Please click the page you want to translate and try again.",
+    "description": "Error message when no regular web page is focused"
+  },
+  "errorScriptPathMissing": {
+    "message": "Translator script path is missing from manifest.",
+    "description": "Error message when script path is missing"
+  },
+  "errorPageBlocksExtensions": {
+    "message": "This page does not allow extensions (e.g. chrome:// or the Web Store). Please try another page or reload after enabling the extension.",
+    "description": "Error message when page blocks extensions"
+  },
+  "errorTranslatorCouldNotLoad": {
+    "message": "Translator could not load on this page yet. Please reload the tab and try again.",
+    "description": "Error message when translator could not load"
+  },
+  "errorRuntimeNotSupported": {
+    "message": "Runtime does not support script injection APIs.",
+    "description": "Error message when runtime does not support script injection"
+  },
+  "errorNoTranslatableText": {
+    "message": "No translatable text found on this page.",
+    "description": "Error message when no translatable text is found"
+  },
+  "errorUnknownAction": {
+    "message": "Unknown action: $ACTION$",
+    "description": "Error message for unknown action",
+    "placeholders": {
+      "action": {
+        "content": "$1",
+        "example": "translate"
+      }
+    }
+  },
+  "errorProviderNotEnabled": {
+    "message": "Provider $PROVIDER$ is not enabled",
+    "description": "Error message when provider is not enabled",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "errorNoActiveTab": {
+    "message": "No active tab available",
+    "description": "Error message when no active tab is available"
+  },
+  "statusLoading": {
+    "message": "Loading...",
+    "description": "Generic loading indicator"
+  },
+  "statusFailedToLoadSettings": {
+    "message": "Failed to load settings",
+    "description": "Error shown when settings cannot be loaded"
+  },
+  "statusSettingsSaved": {
+    "message": "Settings saved successfully",
+    "description": "Confirmation shown after settings are saved"
+  },
+  "statusFailedToSaveSettings": {
+    "message": "Failed to save settings",
+    "description": "Error shown when settings cannot be saved"
+  },
+  "confirmResetSettings": {
+    "message": "Are you sure you want to reset all settings to defaults?",
+    "description": "Confirmation prompt before resetting settings"
+  },
+  "statusSettingsReset": {
+    "message": "Settings reset to defaults",
+    "description": "Confirmation shown after resetting settings"
+  },
+  "statusFailedToResetSettings": {
+    "message": "Failed to reset settings",
+    "description": "Error shown when settings cannot be reset"
+  },
+  "statusSettingsExported": {
+    "message": "Settings exported",
+    "description": "Confirmation shown after exporting settings"
+  },
+  "statusFailedToExportSettings": {
+    "message": "Failed to export settings",
+    "description": "Error shown when settings cannot be exported"
+  },
+  "statusSettingsImported": {
+    "message": "Settings imported successfully",
+    "description": "Confirmation shown after importing settings"
+  },
+  "statusFailedToImportSettings": {
+    "message": "Failed to import settings",
+    "description": "Error shown when settings cannot be imported"
+  },
+  "statusFetchingModels": {
+    "message": "Fetching models from $PROVIDER$...",
+    "description": "Status shown while fetching models from a provider",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "openai"
+      }
+    }
+  },
+  "statusFoundModels": {
+    "message": "Found $COUNT$ models",
+    "description": "Status shown after fetching models",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "statusNoModelsFound": {
+    "message": "No models found. Please enter a model manually.",
+    "description": "Status shown when no models are returned from a provider"
+  },
+  "statusFailedToFetchModels": {
+    "message": "Failed to fetch models",
+    "description": "Error shown when models cannot be fetched"
+  },
+  "labelEnableProvider": {
+    "message": "Enable $PROVIDER$",
+    "description": "Accessible label for the per-provider enable toggle",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "labelToggleVisibility": {
+    "message": "Toggle visibility",
+    "description": "Accessible label for the password visibility toggle"
+  },
+  "labelOptional": {
+    "message": "(optional)",
+    "description": "Suffix shown after a field label when the field is optional"
+  },
+  "languageAutoDetect": {
+    "message": "Auto-detect",
+    "description": "Source language option meaning automatic detection"
+  },
+  "popupHelperEnableProvider": {
+    "message": "Enable a provider in Settings",
+    "description": "Helper text shown in the popup provider selector when no providers are enabled"
+  },
+  "errorNoAccessibleTab": {
+    "message": "No accessible tab.",
+    "description": "Error shown when the popup cannot find an accessible tab"
+  },
+  "errorInvalidSettingsJson": {
+    "message": "Invalid settings JSON",
+    "description": "Error shown when imported settings JSON is invalid"
+  },
+  "errorAPIKeyRequiredForModels": {
+    "message": "$PROVIDER$ API key is required to fetch models.",
+    "description": "Error shown when an API key is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI"
+      }
+    }
+  },
+  "errorBaseURLRequiredForModels": {
+    "message": "Base URL is required to fetch models from $PROVIDER$ providers.",
+    "description": "Error shown when a base URL is missing for fetching models",
+    "placeholders": {
+      "provider": {
+        "content": "$1",
+        "example": "OpenAI-compatible"
+      }
+    }
+  }
+}
