@@ -6,7 +6,7 @@ Multi AI Translatorは、Chrome（Chrome / Edge）向けには Manifest V3、Fir
 
 ## アーキテクチャ図
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     Browser Extension                    │
 ├─────────────────────────────────────────────────────────┤
@@ -45,12 +45,14 @@ Multi AI Translatorは、Chrome（Chrome / Edge）向けには Manifest V3、Fir
 **ファイル**：`src/background/service-worker.ts`
 
 **役割**：
+
 - 拡張機能の中核となる永続的なバックグラウンドプロセス
 - メッセージングのハブとして機能
 - API呼び出しの調整
 - 状態管理
 
 **主な責務**：
+
 ```ts
 // メッセージハンドリング
 browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
@@ -62,6 +64,7 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 ```
 
 **特徴**：
+
 - Manifest V3のService Workerとして実装
 - イベント駆動型
 - 必要に応じてアクティブ化/非アクティブ化
@@ -71,11 +74,13 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 **ファイル**：`src/content/content-script.ts`、`src/content/translator.ts`
 
 **役割**：
+
 - ウェブページのDOMにアクセス
 - ページコンテンツの抽出と操作
 - 翻訳結果のページへの適用
 
 **主な機能**：
+
 ```ts
 // 翻訳フロー
 const translator = new Translator();
@@ -91,6 +96,7 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 ```
 
 **注入モード**：
+
 - `matches`: `<all_urls>` - すべてのページで実行可能
 - `run_at`: `document_idle` - DOMが完全に読み込まれた後に実行
 
@@ -99,11 +105,13 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 **ファイル**：`src/popup/popup.html`、`src/popup/popup.tsx`（React エントリ）、`src/popup/PopupApp.tsx`（React + MUI コンポーネント）
 
 **役割**：
+
 - ユーザーインターフェース
 - 翻訳操作のトリガー
 - 現在の状態表示
 
 **主な機能**：
+
 - ページ翻訳ボタン
 - 選択範囲翻訳ボタン
 - 元に戻すボタン
@@ -111,6 +119,7 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 - 選択中のプロバイダーと、そのプロバイダーに設定されたモデルの表示
 
 **通信**：
+
 ```ts
 // ページ翻訳はアクティブタブのコンテンツスクリプトへ送信する
 await browser.tabs.sendMessage(tabId, {
@@ -131,12 +140,14 @@ await browser.runtime.sendMessage({
 **ファイル**：`src/options/options.html`、`src/options/options.tsx`（React エントリ）、`src/options/OptionsApp.tsx`（React + MUI コンポーネント）、`src/options/providerMeta.ts`（プロバイダーごとの入力フィールド定義）
 
 **役割**：
+
 - 拡張機能の設定管理
 - プロバイダー設定
 - APIキー管理
 - UI言語設定
 
 **設定項目**：
+
 - プロバイダー選択（Gemini、Anthropic（Claude）、Anthropic 互換、OpenAI、OpenAI 互換、Ollama）
 - APIキー
 - モデル選択
@@ -148,11 +159,13 @@ await browser.runtime.sendMessage({
 **ファイル**：`src/providers/`
 
 **役割**：
+
 - 各AIプロバイダーとの通信を抽象化
 - 統一されたインターフェース提供
 - エラーハンドリング
 
 **クラス構造**：
+
 ```ts
 export abstract class BaseProvider<
   Config extends ProviderSettings = ProviderSettings,
@@ -171,18 +184,21 @@ export abstract class BaseProvider<
   // サブクラスが実装する:
   protected abstract initialize(): Promise<void>;
   abstract validateConfig(): boolean;
-  abstract translate(text: string, targetLanguage: string, sourceLanguage?: string): Promise<string>;
+  abstract translate(texts: string[], targetLanguage: string, sourceLanguage?: string): Promise<string[]>;
   abstract getModels(): Promise<string[]>;
 
   // 基底クラスが提供する共通ヘルパー:
-  // ensureInitialized(), withErrorHandling(), createPrompt(),
+  // ensureInitialized(), withErrorHandling(), runTranslation(),
   // handleError(), splitIntoChunks()
 }
 ```
 
+`translate` は**テキストの配列**を受け取り、入力と同じ順序で 1 件につき 1 件の翻訳を返す。`runTranslation(texts, targetLanguage, sourceLanguage, send)` は、設定されたモデル名から**プロンプトプロファイル**と**方式（dispatch：ブロック／単一）**の両方を解決し（[プロンプトプロファイル](#プロンプトプロファイル)を参照）、翻訳を駆動する：1 回のバッチリクエスト、または 1 テキストにつき 1 リクエスト。プロバイダーは `send`（プロンプト文字列で 1 回 API 呼び出しを行い生のモデル出力を返す関数）を渡すだけでよい。プロンプトの組み立てとレスポンスの解析はすべてプロファイル側、バッチ制御はすべて `runTranslation` 側にあるため、プロバイダー（および `translator.ts`）はプロンプト形式を一切知らない。
+
 各プロバイダーは公式 SDK もしくは `fetch` を内部でラップする（例: `@anthropic-ai/sdk`、`openai`、`@google/genai`、`ollama`）。
 
 **サポートされているプロバイダー**（`src/providers/index.ts` の `PROVIDERS` マップで「プロバイダー名 → コンストラクタ」を定義し、`createProvider(name, config)` ファクトリが利用する）：
+
 - `gemini` → `GeminiProvider`
 - `anthropic` → `AnthropicProvider`
 - `anthropic-compatible` → `AnthropicCompatibleProvider`
@@ -195,6 +211,7 @@ export abstract class BaseProvider<
 **ファイル**：`src/utils/`
 
 **役割**：
+
 - 共通ユーティリティ関数
 - ストレージ管理
 - i18n（国際化）
@@ -202,6 +219,7 @@ export abstract class BaseProvider<
 **主要モジュール**：
 
 #### Storage Utils
+
 ```typescript
 import browser from 'webextension-polyfill';
 
@@ -216,6 +234,7 @@ export async function loadSettings(): Promise<Settings> {
 ```
 
 #### i18n Utils
+
 ```typescript
 import browser from 'webextension-polyfill';
 
@@ -225,6 +244,7 @@ export function getMessage(key: string, substitutions?: string[]) {
 ```
 
 #### Text Processing Utils
+
 ```javascript
 // テキストのチャンク分割
 function chunkText(text, maxChunkSize) {
@@ -250,11 +270,49 @@ function chunkText(text, maxChunkSize) {
 }
 ```
 
+### プロンプトプロファイル
+
+**ファイル**：`src/prompts/`
+
+翻訳は、いずれもモデル名から解決される**2つの独立した関心事**で制御される。
+
+- **プロンプト** — モデルに何を送り、その返答をどう解析するか。**プロンプトプロファイル**（`PromptProfile`）が担う。プロンプト形式（XML バッチ、Hy-MT2 の素プロンプトなど）はプロファイル内部に閉じ、`translator.ts` やプロバイダーへ漏れない。
+- **方式（dispatch）** — テキストのバッチを 1 リクエストにまとめる（`block`）か、1 件ずつ送る（`single`）か。`dispatch.ts` で別個に解決される。
+
+この 2 つは意図的に分離されている。あるモデルは**既定プロンプトのまま**でも、複数テキストをまとめると混乱するため**単一方式が必要**になることがある（小型ローカルモデルなど）。プロンプトと方式は別の軸で選ばれ、自由に組み合わせられる。アプリの他の部分とやり取りするデータは常に**テキスト配列を入力 → 翻訳配列を出力**である。
+
+**構成ファイル**：
+
+- `types.ts` — `PromptProfile` インターフェースと `DispatchMode`（`'block' | 'single'`）。プロファイルはプロンプトと解析のみを担う：`buildBlockPrompt`/`parseBlockResponse`（ブロック用・任意）と `buildSinglePrompt`/`parseSingleResponse`（単一用・必須）。`dispatch` の希望も宣言できる。
+- `dispatch.ts` — `SINGLE_DISPATCH_MODEL_RULES`（各ルールは「すべてマッチすべき正規表現の配列」で、いずれかのルールを満たせばマッチ）と `resolveDispatch(profile, model)`。解決順は、プロファイル自身の `dispatch` → モデル名ルール一致 → 既定の `block`。正規表現の AND により、ファミリー名・サイズなど複数のトークンを、順序や間に挟まる修飾子に関係なく要求できる。
+- `default-profile.ts` — 専用プロファイルを持たないモデルの既定。ブロックは XML `<request>`/`<response>`（このファイルの私的な詳細）、単一は素の 1 テキスト指示を使う。
+- `profiles/<model>.ts` — モデルファミリーごとに 1 ファイル。`matches()` ルール、プロンプト文、任意で `dispatch` の希望を持つ。
+- `index.ts` — レジストリ。`resolveProfile(model)` は `matches(model)` が true になる最初のプロファイルを返し、なければ既定プロファイルを返す。dispatch のヘルパーも再エクスポートする。
+
+**翻訳の流れ**：
+
+1. `translator.ts` がテキストのバッチ（`string[]`）を集めてバックグラウンドワーカーへ送る。プロンプト形式は一切関与しない。
+2. プロバイダーの `translate(texts, …)` が `runTranslation(texts, …, send)` を呼ぶ。
+3. `BaseProvider.runTranslation()` がモデル名からプロンプトプロファイルと方式（dispatch）の両方を解決する。
+4. `block` なら全テキストで 1 つのプロンプトを作りバッチ応答を解析、`single` なら 1 件ずつリクエストを送る。いずれも入力と 1:1 に揃った `string[]` を返す。（`block` が選ばれてもプロファイルが単一用メソッドしか持たない場合は単一へフォールバックする。）
+
+**進捗とバッチサイズ**：ページ翻訳の前に `translator.ts` がバックグラウンドワーカーへ翻訳プラン（`getTranslationPlan` → 実効プロバイダー・モデル・方式）を問い合わせる。`single` 方式では 1 グループを 1 バッチにし（バッチサイズ 1、文字数上限なし）、進捗カウンターが複数テキストのチャンク全体が終わるまで固まらず、ブロックごとに進むようにする。方式の決定自体は `dispatch.ts` に閉じており、translator は解決済みの方式を受け取って使うだけである。
+
+**モデル固有プロンプトの追加手順**（新しいプロンプト文）：
+
+1. `src/prompts/profiles/<model>.ts` を作成し、`PromptProfile` をエクスポートする。
+2. `src/prompts/index.ts` の `PROFILES` 配列に登録する。
+
+**独自プロンプトなしで単一方式を強制する**：`dispatch.ts` の `SINGLE_DISPATCH_MODEL_RULES` にルールを追加する。そのモデルは既定プロンプトのまま、1 テキストずつ翻訳される。Gemma 3 の 1B〜4B はこの方法で扱われている：ルールが `gemma3` トークンと `1b`〜`4b` のサイズトークンの両方を（各々区切り文字で境界付けし、順序は問わず）要求するため、`gemma3:4b`、`gemma3-qat-4b`、`gemma3-4b-qat`、`library/gemma3:1b` のようなレジストリ接頭辞付きはすべてマッチし、`codegemma3:4b`、`gemma31b`、`gemma3:12b` はマッチしない。
+
+**例：Hy-MT2**（`profiles/hy-mt2.ts`）：Tencent Hunyuan の
+[Hy-MT2](https://github.com/Tencent-Hunyuan/Hy-MT2) は翻訳専用モデル。このプロファイルは `hy-mt2` を含む（大文字小文字を区別しない・派生版も対象）モデル名にマッチし、モデルの単一テキストプロンプト（`Translate the following text into <Language>. Note that you should only output the translated result without any additional explanation:\n\n<text>`）を使い、対象言語を共通の言語テーブル（`src/utils/languages.ts`）で完全な英語名へ正規化し、`dispatch: 'single'` を宣言して各テキストを個別リクエストで送る。プロンプトプロファイルも dispatch リストもモデル名でマッチするため、そのようなモデルを選択できる任意のプロバイダー（Ollama、OpenAI 互換、Anthropic 互換など）で、プロバイダー固有のコードなしに適用される。
+
 ## データフロー
 
 ### ページ翻訳フロー
 
-```
+```text
 1. ユーザーがポップアップで「ページを翻訳」をクリック
    │
    ▼
@@ -277,7 +335,7 @@ function chunkText(text, maxChunkSize) {
 
 ### 選択テキスト翻訳フロー
 
-```
+```text
 1. ユーザーがテキストを選択し、ポップアップの「選択範囲を翻訳」または右クリックメニューを使用
    │
    ▼
@@ -298,10 +356,12 @@ function chunkText(text, maxChunkSize) {
 ### WebExtension Storage API
 
 **使用するストレージタイプ**：
+
 - `browser.storage.local`: 設定、プロバイダー情報、翻訳履歴
 - `browser.storage.session`: 最後に使用したプロバイダー（session 領域が使えない場合（例: Firefox MV2）は `storage.local` にフォールバック）
 
 **ストレージ構造**（抜粋）。`src/types/settings.ts` の `Settings` 型に対応する：
+
 ```ts
 {
   settings: {
@@ -360,6 +420,7 @@ function chunkText(text, maxChunkSize) {
 ### Content Security Policy
 
 **manifest.json**：
+
 ```json
 {
   "content_security_policy": {
@@ -371,6 +432,7 @@ function chunkText(text, maxChunkSize) {
 ### 権限の最小化
 
 **必要な権限のみを要求**：
+
 ```json
 {
   "permissions": [

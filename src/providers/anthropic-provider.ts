@@ -54,9 +54,13 @@ export class AnthropicProvider extends BaseProvider<AnthropicProviderConfig, Ant
   }
 
   /**
-   * Translate text using Anthropic API
+   * Translate texts using Anthropic API
    */
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto'): Promise<string> {
+  async translate(
+    texts: string[],
+    targetLanguage: string,
+    sourceLanguage = 'auto'
+  ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Anthropic configuration');
     }
@@ -64,8 +68,6 @@ export class AnthropicProvider extends BaseProvider<AnthropicProviderConfig, Ant
     await this.ensureInitialized();
 
     return await this.withErrorHandling(async () => {
-      const prompt = this.createPrompt(text, targetLanguage, sourceLanguage);
-
       if (!this.client) {
         throw new Error('Anthropic client not initialized');
       }
@@ -74,20 +76,25 @@ export class AnthropicProvider extends BaseProvider<AnthropicProviderConfig, Ant
         throw new Error('Model is required');
       }
 
-      const response = await this.client.messages.create({
-        model: this.config.model,
-        max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_ANTHROPIC_MAX_TOKENS,
-        temperature: this.config.temperature ?? ConstVariables.DEFAULT_ANTHROPIC_TEMPERATURE,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      });
+      const model = this.config.model;
+      const client = this.client;
 
-      const content = response.content[0];
-      return 'text' in content ? content.text.trim() : '';
+      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
+        const response = await client.messages.create({
+          model,
+          max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_ANTHROPIC_MAX_TOKENS,
+          temperature: this.config.temperature ?? ConstVariables.DEFAULT_ANTHROPIC_TEMPERATURE,
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        });
+
+        const content = response.content[0];
+        return 'text' in content ? content.text.trim() : '';
+      });
     });
   }
 

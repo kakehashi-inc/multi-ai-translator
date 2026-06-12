@@ -34,6 +34,7 @@ yarn install
 ## Loading the Extension
 
 ### Chrome / Edge
+
 1. Run `yarn dev` (watch) or `yarn build:chrome`
 2. Open `chrome://extensions/` or `edge://extensions/`
 3. Enable **Developer mode**
@@ -41,6 +42,7 @@ yarn install
 5. After changes, wait for Vite to rebuild and click the refresh icon on the extension card
 
 ### Firefox
+
 1. Run `yarn build:firefox`
 2. Open `about:debugging#/runtime/this-firefox`
 3. Click **Load Temporary Add-on** and pick `dist-firefox/manifest.json`
@@ -48,6 +50,7 @@ yarn install
 5. Use the **Inspect** button to view background logs
 
 > Need a persistent install?
+>
 > - **Developer Edition / Nightly**: set `xpinstall.signatures.required = false` in `about:config` to load unsigned builds.
 > - **AMO “Unlisted” signing**: upload the `dist-firefox/` package to the [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/), download the signed XPI, and install it via `about:addons`.
 > - **Enterprise policy**: organizations can disable signature requirements through managed policies, though this is uncommon outside corporate environments.
@@ -61,7 +64,7 @@ yarn install
 
 ## Project Structure
 
-```
+```text
 multi-ai-translator/
 ├── src/
 │   ├── background/         # Service worker
@@ -69,10 +72,11 @@ multi-ai-translator/
 │   ├── options/            # Options page (React + MUI: options.tsx, OptionsApp.tsx, providerMeta.ts)
 │   ├── popup/              # Popup UI (React + MUI: popup.tsx, PopupApp.tsx)
 │   ├── providers/          # AI providers (base-provider.ts, index.ts, one file per provider)
+│   ├── prompts/            # Prompt profiles (default-profile.ts, profiles/<model>.ts, index.ts)
 │   ├── ui/                 # Shared MUI theme and design tokens
 │   ├── types/              # Shared TypeScript types (settings.ts, etc.)
-│   ├── utils/              # Shared utilities (storage, i18n, prompt-builder, dom-manager)
-│   └── locales/            # i18n resources (en, ja)
+│   ├── utils/              # Shared utilities (storage, i18n, dom-manager, const-variables)
+│   └── locales/            # i18n resources (en, ja, zh, ko, es, fr, de, it, pt, ru, ar, hi)
 ├── icons/                  # Extension icons
 ├── scripts/                # Build / packaging / version-sync scripts
 ├── Documents/              # Documentation
@@ -86,29 +90,31 @@ multi-ai-translator/
 
 ## Adding a Provider
 
-1. Create `src/providers/your-provider.ts`
-```ts
-import { BaseProvider } from './base-provider';
+1. Create `src/providers/your-provider.ts`:
 
-export class YourProvider extends BaseProvider {
-  constructor(config) {
-    super(config);
-    this.name = 'your-provider';
-  }
+   ```ts
+   import { BaseProvider } from './base-provider';
 
-  validateConfig() {
-    return !!this.config.apiKey;
-  }
+   export class YourProvider extends BaseProvider {
+     constructor(config) {
+       super(config);
+       this.name = 'your-provider';
+     }
 
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto') {
-    // Implementation
-  }
+     validateConfig() {
+       return !!this.config.apiKey;
+     }
 
-  async getModels() {
-    // Implementation
-  }
-}
-```
+     async translate(texts: string[], targetLanguage: string, sourceLanguage = 'auto') {
+       // Implementation
+     }
+
+     async getModels() {
+       // Implementation
+     }
+   }
+   ```
+
 2. Register it in the `PROVIDERS` map in `src/providers/index.ts`
 3. Add field metadata in `src/options/providerMeta.ts` (the options UI renders from this)
 4. Provide defaults in `src/utils/storage.ts` (`createProviderDefaults`) and add the name to `PROVIDER_ORDER` in `src/utils/const-variables.ts`
@@ -144,11 +150,14 @@ done
 ## Debugging
 
 ### Background
+
 - Chrome/Edge: `chrome://extensions/` → extension card → **Service Worker**
 - Firefox: `about:debugging` → **Inspect**
 
 ### Content Scripts
+
 - Open any page, press F12, check the Console tab
 
 ### Popup / Options
+
 - Right-click the UI → **Inspect**

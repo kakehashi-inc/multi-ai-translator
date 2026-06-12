@@ -13,7 +13,6 @@ import {
   updateTranslationStatus,
   clearTranslationStatus
 } from '../utils/dom-manager';
-import { PromptBuilder } from '../utils/prompt-builder';
 import { ConstVariables } from '../utils/const-variables';
 import { getMessage } from '../utils/i18n';
 import type { Settings } from '../types/settings';
@@ -44,7 +43,13 @@ type NodeReference = {
 };
 
 type TranslateMessageResponse =
-  | { success: true; translation: string; provider: string }
+  | { success: true; translations: string[]; provider: string }
+  | { success: false; error: string };
+
+type DispatchMode = 'block' | 'single';
+
+type TranslationPlanMessageResponse =
+  | { success: true; provider: string; model: string | null; dispatch: DispatchMode }
   | { success: false; error: string };
 
 /**
@@ -116,8 +121,20 @@ export class Translator {
       const totalGroups = textGroups.length;
       updateTranslationStatus(getMessage('statusFoundBlocks', [totalGroups.toString()]));
 
-      const maxChars = Number(settings.common.batchMaxChars) || DEFAULT_BATCH_MAX_CHARS;
-      const maxItems = Number(settings.common.batchMaxItems) || DEFAULT_BATCH_MAX_ITEMS;
+      // Resolve the dispatch mode up front. In 'single' mode the provider sends
+      // one request per text, so we build one-group-per-batch (maxItems = 1, no
+      // char cap) to keep the progress counter advancing per group instead of
+      // freezing for the whole chunk. In 'block' mode we use the configured
+      // batch sizes. If the plan cannot be resolved we fall back to block.
+      const plan = await this.getTranslationPlan(provider);
+      const isSingleDispatch = plan?.success === true && plan.dispatch === 'single';
+
+      const maxChars = isSingleDispatch
+        ? Number.MAX_SAFE_INTEGER
+        : Number(settings.common.batchMaxChars) || DEFAULT_BATCH_MAX_CHARS;
+      const maxItems = isSingleDispatch
+        ? 1
+        : Number(settings.common.batchMaxItems) || DEFAULT_BATCH_MAX_ITEMS;
 
       // Estimate total batches based on groups and batch size
       // This is an approximation since batches are created dynamically
@@ -158,19 +175,13 @@ export class Translator {
             getMessage('statusTranslating', [batchNumber.toString(), maxBatchNumber.toString()])
           );
 
-          const requestPayload = PromptBuilder.buildRequestPayload(batchTexts);
-          const result = await this.translateText(requestPayload, target, source, provider);
+          const result = await this.translateBatch(batchTexts, target, source, provider);
 
           if (!result?.success) {
             throw new Error(result?.error || getMessage('errorTranslationFailed'));
           }
 
-          let translations = PromptBuilder.parseResponsePayload(result.translation, batchTexts);
-
-          if (!translations.length) {
-            console.warn('[Translator] Failed to parse structured response, using fallback');
-            translations = this.splitTranslation(result.translation, batchTexts.length);
-          }
+          const translations = result.translations;
 
           // If cancel was requested while waiting for the provider, skip applying results
           if (this.cancelRequested) {
@@ -354,26 +365,18 @@ export class Translator {
       const provider = providerName || null;
       const source = sourceLanguage || settings.common.defaultSourceLanguage || 'auto';
 
-      const requestPayload = PromptBuilder.buildRequestPayload([text]);
-      const result = await this.translateText(requestPayload, target, source, provider);
+      const result = await this.translateBatch([text], target, source, provider);
 
       if (!result.success) {
         throw new Error(result.error);
       }
 
-      // XML形式のレスポンスをパース
-      const translations = PromptBuilder.parseResponsePayload(result.translation, [text]);
+      const translated = result.translations[0];
 
-      // パースが成功し、翻訳結果が存在する場合（条件判定でのみtrim()を使用）
-      if (translations.length > 0 && translations[0] != null && translations[0].trim() !== '') {
-        // 実際の値はtrim()せずに返す（空白や改行を維持）
-        return translations[0];
-      }
-
-      // パースが失敗した場合、生の翻訳結果を使用（条件判定でのみtrim()を使用）
-      if (result.translation != null && result.translation.trim() !== '') {
-        // 実際の値はtrim()せずに返す（空白や改行を維持）
-        return result.translation;
+      // 翻訳結果が存在する場合は返す（条件判定でのみtrim()を使用し、実際の値は
+      // 空白や改行を維持するためtrim()しない）
+      if (translated != null && translated.trim() !== '') {
+        return translated;
       }
 
       // 翻訳結果が空の場合は元のテキストを返す
@@ -393,10 +396,31 @@ export class Translator {
   }
 
   /**
-   * Translate text via background script
+   * Ask the background worker which provider/model/dispatch will be used, so we
+   * can size batches before translating. Returns null on any failure; callers
+   * then fall back to block-mode batching.
    */
-  private async translateText(
-    text: string,
+  private async getTranslationPlan(
+    providerName: string | null
+  ): Promise<TranslationPlanMessageResponse | null> {
+    try {
+      return (await browser.runtime.sendMessage({
+        action: 'getTranslationPlan',
+        data: { providerName }
+      })) as TranslationPlanMessageResponse;
+    } catch (error) {
+      console.warn('[Translator] Failed to resolve translation plan, assuming block mode', error);
+      return null;
+    }
+  }
+
+  /**
+   * Translate a batch of texts via the background script.
+   * The background worker delegates to the provider/prompt-profile layer and
+   * returns one translation per input text, in order.
+   */
+  private async translateBatch(
+    texts: string[],
     targetLanguage: string,
     sourceLanguage: string,
     providerName: string | null
@@ -404,7 +428,7 @@ export class Translator {
     return browser.runtime.sendMessage({
       action: 'translate',
       data: {
-        text,
+        texts,
         targetLanguage,
         sourceLanguage,
         providerName
@@ -433,25 +457,6 @@ export class Translator {
       parent,
       nodes: groupedNodes
     }));
-  }
-
-  /**
-   * Split translation back to match node count
-   */
-  private splitTranslation(translation: string, nodeCount: number): string[] {
-    if (nodeCount === 1) {
-      return [translation];
-    }
-
-    // Simple split by sentences
-    const sentences = translation.match(/[^.!?]+[.!?]+/g) || [translation];
-
-    if (sentences.length >= nodeCount) {
-      return sentences.slice(0, nodeCount);
-    }
-
-    // If fewer sentences, pad with empty strings
-    return [...sentences, ...Array(nodeCount - sentences.length).fill('')];
   }
 
   /**

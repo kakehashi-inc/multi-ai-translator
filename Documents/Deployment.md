@@ -3,6 +3,7 @@
 ## Building for Production
 
 1. Build the Chrome + Firefox targets:
+
 ```bash
 yarn build
 ```
@@ -10,12 +11,14 @@ yarn build
 This produces optimized bundles in `dist/` (Chrome) and `dist-firefox/` (Firefox).
 Use `yarn build:chrome` or `yarn build:firefox` if you need individual builds.
 
-2. Create distribution packages:
+1. Create distribution packages:
+
 ```bash
 yarn package
 ```
 
 This writes versioned ZIP files to `packages/` (the version is read from each `manifest*.json`):
+
 - `multi-ai-translator-chrome-<version>.zip` (for Chrome / Edge) — e.g. `multi-ai-translator-chrome-0.1.2.zip`
 - `multi-ai-translator-firefox-<version>.zip` (for Firefox)
 
@@ -31,6 +34,7 @@ This writes versioned ZIP files to `packages/` (the version is read from each `m
 | Firefox Add-ons (AMO) | Listed / Unlisted submission, signing, hosting | Free |
 
 Notes:
+
 - The Chrome USD 5 fee is a **one-time** charge per Google account, not per extension. One paid account can publish up to 20 extensions. The fee is the same for individual and company accounts; Google does not charge an additional company-verification fee for Chrome Web Store.
 - For Microsoft Edge Add-ons, **publishing is free for both individual and company accounts** as of 2025-12 (per Microsoft Learn: *"There is no registration fee for submitting extensions to the Microsoft Edge program"*). The USD 99 Partner Center fee that some sources mention applies to other Microsoft Store programs (e.g. Windows app publishing), **not** to the Edge extensions program.
 - Company (enterprise) account specifics:
@@ -41,6 +45,7 @@ Notes:
 ## Chrome Web Store
 
 ### Prerequisites
+
 - Google account
 - **USD 5** one-time developer registration fee (paid once at the registration step below)
 - Prepared assets (icons, screenshots, descriptions)
@@ -76,7 +81,8 @@ Notes:
    - **Language**: English
 
    Description template:
-   ```
+
+   ```text
    Multi AI Translator is a powerful browser extension that allows you to translate
    web pages using multiple AI providers including OpenAI, Claude, Gemini, and Ollama.
 
@@ -107,7 +113,8 @@ Notes:
    - Justify permissions
 
    Privacy policy template:
-   ```
+
+   ```text
    Privacy Policy for Multi AI Translator
 
    Data Collection:
@@ -146,6 +153,7 @@ Notes:
 ## Microsoft Edge Add-ons
 
 ### Prerequisites
+
 - Microsoft account
 - No registration fee
 - Prepared assets
@@ -170,6 +178,7 @@ Notes:
 ## Firefox Add-ons (AMO)
 
 ### Prerequisites
+
 - Mozilla account (Firefox account)
 - No registration fee
 - Prepared assets (icons, screenshots, descriptions)
@@ -205,27 +214,32 @@ Notes:
 ## Updating the Extension
 
 1. **Bump the version in `package.json`** — this is the source of truth:
+
 ```json
 {
   "version": "0.1.3"
 }
 ```
+
    `yarn build:chrome` / `yarn build:firefox` automatically run `scripts/sync-manifest-version.js`, which propagates the version to both `manifest.json` (Chrome/Edge, MV3) and `manifest.firefox.json` (Firefox, MV2). You can also run `yarn sync:version` manually.
 
-2. **Build and package**:
+1. **Build and package**:
+
 ```bash
 yarn build
 yarn package
 ```
+
    This produces versioned ZIPs such as `multi-ai-translator-chrome-0.1.3.zip` and `multi-ai-translator-firefox-0.1.3.zip` under `packages/`.
 
-3. **Upload new version**:
+1. **Upload new version**:
    - Chrome: Upload `multi-ai-translator-chrome-<version>.zip` to the existing item in the Developer Dashboard (no fee for updates)
    - Edge: Create a new submission in Partner Center and upload the same Chrome ZIP (no fee)
    - Firefox: Upload `multi-ai-translator-firefox-<version>.zip` as a new version of the existing add-on in the Firefox Add-ons Developer Hub (Listed goes through automated review, Unlisted is signing-only — both are free)
 
-4. **Add release notes**:
-```
+2. **Add release notes**:
+
+```text
 Version 1.0.1
 - Fixed translation error handling
 - Improved performance

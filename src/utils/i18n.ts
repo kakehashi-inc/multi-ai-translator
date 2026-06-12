@@ -4,10 +4,9 @@
  */
 import browser from 'webextension-polyfill';
 
-type LanguageEntry = {
-  code: string;
-  name: string;
-};
+// Re-exported so existing imports (`getSupportedLanguages` from i18n) keep
+// working; the language table itself lives in `languages.ts`.
+export { getSupportedLanguages } from './languages';
 
 /**
  * Initialize i18n with messages from browser.i18n
@@ -54,26 +53,6 @@ export function translatePage(): void {
   });
 }
 
-/**
- * Get supported languages
- * @returns {object[]} Array of {code, name} objects
- */
-export function getSupportedLanguages(): LanguageEntry[] {
-  return [
-    { code: 'en', name: 'English' },
-    { code: 'ja', name: '日本語' },
-    { code: 'zh', name: '中文' },
-    { code: 'ko', name: '한국어' },
-    { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'it', name: 'Italiano' },
-    { code: 'pt', name: 'Português' },
-    { code: 'ru', name: 'Русский' },
-    { code: 'ar', name: 'العربية' },
-    { code: 'hi', name: 'हिन्दी' }
-  ];
-}
 
 // Initialize on load
 if (typeof window !== 'undefined') {

@@ -1,5 +1,6 @@
 import { ConstVariables } from '../utils/const-variables';
-import { PromptBuilder } from '../utils/prompt-builder';
+import { resolveProfile, resolveDispatch } from '../prompts';
+import type { PromptContext, SendPrompt } from '../prompts';
 import type { ProviderName, ProviderSettings } from '../types/settings';
 
 /**
@@ -62,19 +63,20 @@ export abstract class BaseProvider<
   abstract validateConfig(): boolean;
 
   /**
-   * Translate text using the AI provider
-   * Must be implemented by subclass
+   * Translate a list of texts using the AI provider.
+   * Must be implemented by subclass. Returns one translation per input text,
+   * in the same order.
    * @abstract
-   * @param {string} text - Text to translate
+   * @param {string[]} texts - Texts to translate
    * @param {string} targetLanguage - Target language
    * @param {string} sourceLanguage - Source language (optional)
-   * @returns {Promise<string>} Translated text
+   * @returns {Promise<string[]>} Translated texts, aligned 1:1 with input
    */
   abstract translate(
-    text: string,
+    texts: string[],
     targetLanguage: string,
     sourceLanguage?: string
-  ): Promise<string>;
+  ): Promise<string[]>;
 
   /**
    * Get available models for this provider
@@ -85,15 +87,64 @@ export abstract class BaseProvider<
   abstract getModels(): Promise<string[]>;
 
   /**
-   * Create translation prompt
-   * Delegates to utility function for reusability
-   * @param {string} text - Text to translate
-   * @param {string} targetLanguage - Target language
-   * @param {string} sourceLanguage - Source language
-   * @returns {string} Formatted prompt
+   * Translate a list of texts.
+   *
+   * Two independent concerns are resolved from the configured model name:
+   *   - Prompt: the prompt profile (default XML, Hy-MT2, ...) owns the prompt
+   *     text and how to parse the model's reply.
+   *   - Dispatch: whether to send the whole batch in one request ('block') or
+   *     one request per text ('single'). See `src/prompts/dispatch.ts`.
+   *
+   * Providers only supply `send`, which performs one API call with a prompt
+   * string and returns the raw output. All prompt/parse logic stays in the
+   * profile; all batching logic stays here.
+   *
+   * @param texts          Source texts to translate, in order.
+   * @param targetLanguage Target language code/label.
+   * @param sourceLanguage Source language code/label ('auto' for detection).
+   * @param send           Provider-specific single-prompt sender.
+   * @returns Translations aligned 1:1 with `texts`.
    */
-  protected createPrompt(text: string, targetLanguage: string, sourceLanguage: string): string {
-    return PromptBuilder.buildPrompt(text, targetLanguage, sourceLanguage);
+  protected async runTranslation(
+    texts: string[],
+    targetLanguage: string,
+    sourceLanguage: string,
+    send: SendPrompt
+  ): Promise<string[]> {
+    if (texts.length === 0) {
+      return [];
+    }
+
+    const model = 'model' in this.config ? (this.config as { model?: string }).model : undefined;
+    const profile = resolveProfile(model);
+    const context: PromptContext = { sourceLanguage, targetLanguage, model };
+
+    let dispatch = resolveDispatch(profile, model);
+    // A profile may only implement single dispatch; fall back to single if
+    // block was selected but the profile has no block methods.
+    if (dispatch === 'block' && !profile.buildBlockPrompt) {
+      dispatch = 'single';
+    }
+
+    if (dispatch === 'block' && profile.buildBlockPrompt && profile.parseBlockResponse) {
+      const prompt = profile.buildBlockPrompt(texts, context);
+      const output = await send(prompt);
+      return profile.parseBlockResponse(output, texts);
+    }
+
+    // Single dispatch: one request per text. Empty / whitespace-only items are
+    // passed through unchanged and never sent to the model.
+    const result = texts.slice();
+    for (let i = 0; i < texts.length; i++) {
+      const text = texts[i];
+      if (!text || text.trim() === '') {
+        continue;
+      }
+      const prompt = profile.buildSinglePrompt(text, context);
+      const output = await send(prompt);
+      result[i] = profile.parseSingleResponse(output, text);
+    }
+    return result;
   }
 
   /**

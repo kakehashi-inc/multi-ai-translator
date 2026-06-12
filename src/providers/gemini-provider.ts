@@ -55,7 +55,11 @@ export class GeminiProvider extends BaseProvider<GeminiProviderConfig, GoogleGen
     return !!(this.config.apiKey && this.config.model);
   }
 
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto'): Promise<string> {
+  async translate(
+    texts: string[],
+    targetLanguage: string,
+    sourceLanguage = 'auto'
+  ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Gemini configuration');
     }
@@ -67,28 +71,32 @@ export class GeminiProvider extends BaseProvider<GeminiProviderConfig, GoogleGen
         throw new Error('Gemini client not initialized');
       }
 
-      const prompt = this.createPrompt(text, targetLanguage, sourceLanguage);
+      const client = this.client;
+      const modelName = this.modelName;
+      const generationConfig = this.generationConfig;
 
-      const requestParams: {
-        model: string;
-        contents: string;
-        temperature?: number;
-        maxOutputTokens?: number;
-      } = {
-        model: this.modelName,
-        contents: prompt
-      };
+      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
+        const requestParams: {
+          model: string;
+          contents: string;
+          temperature?: number;
+          maxOutputTokens?: number;
+        } = {
+          model: modelName,
+          contents: prompt
+        };
 
-      if (this.generationConfig?.temperature !== undefined) {
-        requestParams.temperature = this.generationConfig.temperature;
-      }
-      if (this.generationConfig?.maxOutputTokens !== undefined) {
-        requestParams.maxOutputTokens = this.generationConfig.maxOutputTokens;
-      }
+        if (generationConfig?.temperature !== undefined) {
+          requestParams.temperature = generationConfig.temperature;
+        }
+        if (generationConfig?.maxOutputTokens !== undefined) {
+          requestParams.maxOutputTokens = generationConfig.maxOutputTokens;
+        }
 
-      const response = await this.client.models.generateContent(requestParams);
+        const response = await client.models.generateContent(requestParams);
 
-      return response.text?.trim() ?? '';
+        return response.text?.trim() ?? '';
+      });
     });
   }
 

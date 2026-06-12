@@ -6,7 +6,7 @@ Multi AI Translator runs as a cross-browser extension: Manifest V3 for Chrome (C
 
 ## Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     Browser Extension                    │
 ├─────────────────────────────────────────────────────────┤
@@ -45,11 +45,13 @@ Multi AI Translator runs as a cross-browser extension: Manifest V3 for Chrome (C
 **File**: `src/background/service-worker.ts`
 
 **Role**:
+
 - Central message hub between popup/options/content scripts
 - Orchestrates provider interactions and error handling
 - Persists lightweight state (last used provider, history)
 
 **Key responsibilities**:
+
 ```ts
 import browser from 'webextension-polyfill';
 
@@ -62,6 +64,7 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 ```
 
 **Characteristics**:
+
 - MV3 service worker on Chrome, MV2 background script (built via esbuild) on Firefox
 - Event-driven, spins up on demand
 
@@ -70,10 +73,12 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 **Files**: `src/content/content-script.ts`, `src/content/translator.ts`
 
 **Role**:
+
 - Access the page DOM, extract text nodes, patch translations back in
 - Show selection popups and page-level status overlays
 
 **Workflow**:
+
 ```ts
 const translator = new Translator();
 await translator.initialize();
@@ -88,6 +93,7 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 ```
 
 **Injection**:
+
 - `matches`: `<all_urls>`
 - `run_at`: `document_idle`
 - Built as module for Chrome, bundled to IIFE for Firefox
@@ -97,10 +103,12 @@ browser.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 **Files**: `src/popup/popup.html`, `src/popup/popup.tsx` (React entry), `src/popup/PopupApp.tsx` (React + MUI component)
 
 **Role**:
+
 - Primary user controls (translate page, translate selection, restore, open settings)
 - Displays the selected provider, the model configured for that provider, and source/target language state
 
 **Communication**:
+
 ```ts
 // Page translation is dispatched to the active tab's content script.
 await browser.tabs.sendMessage(tabId, {
@@ -121,10 +129,12 @@ await browser.runtime.sendMessage({
 **Files**: `src/options/options.html`, `src/options/options.tsx` (React entry), `src/options/OptionsApp.tsx` (React + MUI component), `src/options/providerMeta.ts` (per-provider field metadata)
 
 **Role**:
+
 - Manage provider credentials, model selection, batch settings, UI preferences
 - Trigger import/export/reset of settings
 
 **Highlights**:
+
 - Fetch available models by sending `getModels` requests to the background worker
 - Persists settings through storage utilities
 
@@ -133,10 +143,12 @@ await browser.runtime.sendMessage({
 **Directory**: `src/providers/`
 
 **Role**:
+
 - Abstract the communication differences across OpenAI, Anthropic, Gemini, Ollama, etc.
 - Provide a shared interface (`translate`, `getModels`, `validateConfig`)
 
 **Structure**:
+
 ```ts
 export abstract class BaseProvider<
   Config extends ProviderSettings = ProviderSettings,
@@ -155,14 +167,24 @@ export abstract class BaseProvider<
   // Subclasses must implement:
   protected abstract initialize(): Promise<void>;
   abstract validateConfig(): boolean;
-  abstract translate(text: string, targetLanguage: string, sourceLanguage?: string): Promise<string>;
+  abstract translate(texts: string[], targetLanguage: string, sourceLanguage?: string): Promise<string[]>;
   abstract getModels(): Promise<string[]>;
 
   // Shared helpers provided by the base class:
-  // ensureInitialized(), withErrorHandling(), createPrompt(),
+  // ensureInitialized(), withErrorHandling(), runTranslation(),
   // handleError(), splitIntoChunks()
 }
 ```
+
+`translate` takes a **list of texts** and returns one translation per input, in
+order. `runTranslation(texts, targetLanguage, sourceLanguage, send)` resolves a
+model-specific **prompt profile** AND a **dispatch mode** (block vs single) from
+the configured model name (see [Prompt Profiles](#prompt-profiles)), then drives
+the translation: one batched request, or one request per text. The provider only
+supplies `send` — a function that performs one API call with a prompt string and
+returns the raw model output. All prompt construction and response parsing lives
+in the profile and all batching lives in `runTranslation`, so providers (and
+`translator.ts`) stay unaware of any prompt format.
 
 Registered providers (`src/providers/index.ts` exports a `PROVIDERS` map of
 provider name → constructor, consumed by the `createProvider(name, config)`
@@ -180,7 +202,9 @@ factory):
 **Directory**: `src/utils/`
 
 **Modules**:
+
 - `storage.ts`: normalization, default settings, CRUD helpers
+
 ```ts
 import browser from 'webextension-polyfill';
 
@@ -193,8 +217,96 @@ export async function getSettings(): Promise<Settings> {
   return normalizeSettings(settings);
 }
 ```
+
 - `i18n.ts`: wrappers around `browser.i18n`
-- `prompt-builder.ts`, `dom-manager.ts`, `const-variables.ts`, etc.
+- `dom-manager.ts`, `const-variables.ts`, etc.
+
+### Prompt Profiles
+
+**Directory**: `src/prompts/`
+
+Translation is governed by **two independent concerns**, both resolved from the
+model name:
+
+- **Prompt** — what text is sent to the model and how its reply is parsed. Owned
+  by a **prompt profile** (`PromptProfile`). The prompt format (XML batch, the
+  Hy-MT2 plain prompt, etc.) lives entirely inside a profile and never leaks into
+  `translator.ts` or the providers.
+- **Dispatch** — whether a batch of texts is sent as ONE request (`block`) or one
+  request per text (`single`). Resolved separately in `dispatch.ts`.
+
+These are deliberately separate. A model can keep the **default prompt** yet
+still need **single dispatch** because batching multiple texts confuses it
+(e.g. small local models). Prompt and dispatch are chosen on different axes and
+combine freely. The data exchanged with the rest of the app is always a plain
+**array of texts in / array of translations out**.
+
+**Files**:
+
+- `types.ts` — `PromptProfile` interface and `DispatchMode` (`'block' | 'single'`).
+  A profile owns only prompt + parsing: `buildBlockPrompt`/`parseBlockResponse`
+  (optional, for block) and `buildSinglePrompt`/`parseSingleResponse` (required,
+  for single). It may also declare a `dispatch` preference.
+- `dispatch.ts` — `SINGLE_DISPATCH_MODEL_RULES` (each rule is a list of regexes
+  that must ALL match the model name; a model matches if it satisfies any rule)
+  and `resolveDispatch(profile, model)`. Resolution order: the profile's own
+  `dispatch` → a model-name rule match → default `block`. AND-of-regexes lets a
+  rule require several tokens (family, size) regardless of their order or of
+  modifiers between them.
+- `default-profile.ts` — the fallback profile for models without a dedicated one.
+  Block uses an XML `<request>`/`<response>` (a private detail of this file);
+  single uses a plain one-text instruction.
+- `profiles/<model>.ts` — one file per model family, owning its `matches()` rule,
+  its prompt text, and optionally a `dispatch` preference.
+- `index.ts` — the registry. `resolveProfile(model)` returns the first profile
+  whose `matches(model)` is true, or the default profile; it also re-exports the
+  dispatch helpers.
+
+**How a translation flows**:
+
+1. `translator.ts` collects a batch of texts (a `string[]`) and sends them to the
+   background worker — no prompt format involved.
+2. The provider's `translate(texts, …)` calls `runTranslation(texts, …, send)`.
+3. `BaseProvider.runTranslation()` resolves the prompt profile AND the dispatch
+   mode from the model name.
+4. For `block` it builds one prompt for all texts and parses the batch reply; for
+   `single` it sends one request per text. Either way it returns a `string[]`
+   aligned 1:1 with the input. (If `block` is selected but the profile only
+   implements single methods, it falls back to single.)
+
+**Progress / batch sizing**: before page translation, `translator.ts` asks the
+background worker for the translation plan (`getTranslationPlan` → effective
+provider, model, and dispatch). In `single` dispatch it builds one group per
+batch (batch size 1, no char cap) so the progress counter advances per block
+instead of freezing for a whole multi-text chunk. The dispatch decision itself
+stays in `dispatch.ts` — the translator only consumes the resolved mode.
+
+**Adding a model-specific prompt** (new prompt text):
+
+1. Create `src/prompts/profiles/<model>.ts` exporting a `PromptProfile`.
+2. Register it in the `PROFILES` array in `src/prompts/index.ts`.
+
+**Forcing single dispatch without a custom prompt**: add a rule to
+`SINGLE_DISPATCH_MODEL_RULES` in `dispatch.ts`. The model keeps the default
+prompt but is translated one text per request. This is how Gemma 3 in the 1B-4B
+range is handled: a rule requires both a `gemma3` token and a `1b`-`4b` size
+token, each bounded by delimiters and in any order — so `gemma3:4b`,
+`gemma3-qat-4b`, `gemma3-4b-qat`, and registry-prefixed names like
+`library/gemma3:1b` all match, while `codegemma3:4b`, `gemma31b`, and
+`gemma3:12b` do not.
+
+**Example — Hy-MT2** (`profiles/hy-mt2.ts`): Tencent Hunyuan
+[Hy-MT2](https://github.com/Tencent-Hunyuan/Hy-MT2) is a dedicated translation
+model. Its profile matches any model name containing `hy-mt2` (case-insensitive,
+covering derived variants), uses the model's documented single-text prompt
+(`Translate the following text into <Language>. Note that you should only output
+the translated result without any additional explanation:\n\n<text>`),
+normalizes the target language to its full English name via the shared language
+table (`src/utils/languages.ts`), and declares `dispatch: 'single'` so each text
+is sent in its own request. Because both the
+prompt profile and the dispatch list match on the model name, they apply to any
+provider where such a model can be selected (Ollama, OpenAI-compatible,
+Anthropic-compatible, etc.) with no provider-specific code.
 
 ## Storage Strategy
 
@@ -206,6 +318,7 @@ export async function getSettings(): Promise<Settings> {
 - `browser.storage.session` — the last-used provider (falls back to `storage.local` when the session area is unavailable, e.g. on Firefox MV2)
 
 **Structure (excerpt)** — mirrors the `Settings` type in `src/types/settings.ts`:
+
 ```ts
 {
   settings: {
@@ -249,7 +362,7 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
 
 ### Page Translation
 
-```
+```text
 1. User clicks "Translate Page" in Popup
 2. Popup sends { action: 'translate-page', provider, language }
 3. Background worker resolves settings + provider, injects content script if necessary
@@ -261,7 +374,7 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
 
 ### Selection Translation
 
-```
+```text
 1. User selects text and triggers context menu / popup button
 2. Content script extracts selection (or uses provided text)
 3. Background worker translates via provider
@@ -282,6 +395,7 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
    - DOM manipulations scoped to allowed nodes
 
 4. **CSP**
+
 ```json
 {
   "content_security_policy": {
@@ -290,7 +404,8 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
 }
 ```
 
-5. **Permissions**
+1. **Permissions**
+
 ```json
 {
   "permissions": ["storage", "activeTab", "scripting", "contextMenus", "notifications"],
@@ -308,6 +423,7 @@ The popup chooses its provider by reading `lastUsedProvider` (if still enabled) 
    - The Firefox esbuild pass (`vite.firefox.config.ts`) runs a `stub-node-builtins` plugin that resolves any `node:*` import to an empty module. Some dependencies (e.g. `@anthropic-ai/sdk`) reference Node builtins such as `node:fs` / `node:path` from code paths that never execute in a browser extension; stubbing them keeps those paths inert so the browser bundle can build.
 
 2. **Batch Translation**
+
 ```ts
 async function batchTranslate(chunks: string[], provider: BaseProvider) {
   const results: string[] = [];
@@ -326,10 +442,10 @@ async function batchTranslate(chunks: string[], provider: BaseProvider) {
 }
 ```
 
-3. **DOM Updates**
+1. **DOM Updates**
    - Group nodes by parent, display loading indicators, update in-place to minimize reflow
 
-4. **Memory Handling**
+2. **Memory Handling**
    - Drop references after each batch
    - Limit history to 100 entries
 
@@ -340,6 +456,7 @@ async function batchTranslate(chunks: string[], provider: BaseProvider) {
    - Convert provider-specific messages into user-friendly ones
 
 2. **Background Layer**
+
 ```ts
 async function handleTranslateRequest(data: TranslatePayload) {
   try {
@@ -352,7 +469,7 @@ async function handleTranslateRequest(data: TranslatePayload) {
 }
 ```
 
-3. **UI Layer**
+1. **UI Layer**
    - Popup displays descriptive errors and allows retry
    - Status overlay reports errors encountered during page translation
 
@@ -366,32 +483,36 @@ async function handleTranslateRequest(data: TranslatePayload) {
 
 ### Adding a New Provider
 
-1. Create `src/providers/your-provider.ts`
-```ts
-export class YourProvider extends BaseProvider {
-  validateConfig() {
-    return !!this.config.apiKey;
-  }
+1. Create `src/providers/your-provider.ts`:
 
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto') {
-    // Implementation
-  }
+   ```ts
+   export class YourProvider extends BaseProvider {
+     validateConfig() {
+       return !!this.config.apiKey;
+     }
 
-  async getModels() {
-    // Implementation
-  }
-}
-```
-2. Register it inside `src/providers/index.ts`
-```ts
-import { YourProvider } from './your-provider';
+     async translate(texts: string[], targetLanguage: string, sourceLanguage = 'auto') {
+       // Implementation
+     }
 
-export const PROVIDERS: Record<string, ProviderConstructor> = {
-  gemini: GeminiProvider,
-  // …
-  'your-provider': YourProvider as ProviderConstructor
-};
-```
+     async getModels() {
+       // Implementation
+     }
+   }
+   ```
+
+2. Register it inside `src/providers/index.ts`:
+
+   ```ts
+   import { YourProvider } from './your-provider';
+
+   export const PROVIDERS: Record<string, ProviderConstructor> = {
+     gemini: GeminiProvider,
+     // …
+     'your-provider': YourProvider as ProviderConstructor
+   };
+   ```
+
 3. Extend the defaults in `src/utils/storage.ts` (`createProviderDefaults`, `PROVIDER_ORDER` in `const-variables.ts`), add field metadata in `src/options/providerMeta.ts`, and the popup picks it up automatically from the enabled-providers list
 
 ## References

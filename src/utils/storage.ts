@@ -5,6 +5,7 @@
 import browser from 'webextension-polyfill';
 import { ConstVariables } from './const-variables';
 import { getMessage } from './i18n';
+import { resolveLanguageId } from './languages';
 import type {
   ProviderName,
   ProviderSettings,
@@ -37,26 +38,21 @@ type HistoryStorageShape = {
   translationHistory?: TranslationHistoryItem[];
 };
 
-function normalizeLanguageCode(language?: string | null): string {
-  if (!language || typeof language !== 'string') {
-    return DEFAULT_LANGUAGE;
-  }
-
-  const [code] = language.split(/[-_]/);
-  return code?.toLowerCase() || DEFAULT_LANGUAGE;
-}
-
+/**
+ * Resolve the browser's UI language to a supported language id (e.g. "en-US" →
+ * "en_US", "ja-JP" → "ja"). Falls back to the default language.
+ */
 export function getBrowserLanguage(): string {
   try {
     if (browser?.i18n?.getUILanguage) {
-      return normalizeLanguageCode(browser.i18n.getUILanguage());
+      return resolveLanguageId(browser.i18n.getUILanguage());
     }
   } catch (error) {
     console.warn('Failed to read browser UI language', error);
   }
 
   if (typeof navigator !== 'undefined' && navigator.language) {
-    return normalizeLanguageCode(navigator.language);
+    return resolveLanguageId(navigator.language);
   }
 
   return DEFAULT_LANGUAGE;

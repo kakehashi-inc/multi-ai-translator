@@ -45,9 +45,13 @@ export class OllamaProvider extends BaseProvider<OllamaProviderConfig, Ollama> {
   }
 
   /**
-   * Translate text using Ollama
+   * Translate texts using Ollama
    */
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto'): Promise<string> {
+  async translate(
+    texts: string[],
+    targetLanguage: string,
+    sourceLanguage = 'auto'
+  ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid Ollama configuration');
     }
@@ -55,8 +59,6 @@ export class OllamaProvider extends BaseProvider<OllamaProviderConfig, Ollama> {
     await this.ensureInitialized();
 
     return await this.withErrorHandling(async () => {
-      const prompt = this.createPrompt(text, targetLanguage, sourceLanguage);
-
       if (!this.client) {
         throw new Error('Ollama client not initialized');
       }
@@ -65,16 +67,27 @@ export class OllamaProvider extends BaseProvider<OllamaProviderConfig, Ollama> {
         throw new Error('Model is required');
       }
 
-      const response = await this.client.generate({
-        model: this.config.model,
-        prompt,
-        stream: false,
-        options: {
-          temperature: this.config.temperature ?? ConstVariables.DEFAULT_OLLAMA_TEMPERATURE
-        }
-      });
+      const model = this.config.model;
+      const client = this.client;
 
-      return response.response.trim();
+      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
+        // Use the chat endpoint (not generate) so Ollama applies the model's
+        // chat template. Chat models such as Hy-MT2 rely on their template to
+        // wrap the message in role markers; with the raw `generate` endpoint the
+        // template boundaries break down and the model leaks its special tokens
+        // (e.g. "hy_User", "hy-Assistant", "hy_End__of__sentence") into the
+        // output or degenerates into repetition.
+        const response = await client.chat({
+          model,
+          messages: [{ role: 'user', content: prompt }],
+          stream: false,
+          options: {
+            temperature: this.config.temperature ?? ConstVariables.DEFAULT_OLLAMA_TEMPERATURE
+          }
+        });
+
+        return response.message.content.trim();
+      });
     });
   }
 

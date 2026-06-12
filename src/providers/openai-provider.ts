@@ -54,9 +54,13 @@ export class OpenAIProvider extends BaseProvider<OpenAIProviderConfig, OpenAI> {
   }
 
   /**
-   * Translate text using OpenAI
+   * Translate texts using OpenAI
    */
-  async translate(text: string, targetLanguage: string, sourceLanguage = 'auto'): Promise<string> {
+  async translate(
+    texts: string[],
+    targetLanguage: string,
+    sourceLanguage = 'auto'
+  ): Promise<string[]> {
     if (!this.validateConfig()) {
       throw new Error('Invalid OpenAI configuration');
     }
@@ -64,8 +68,6 @@ export class OpenAIProvider extends BaseProvider<OpenAIProviderConfig, OpenAI> {
     await this.ensureInitialized();
 
     return await this.withErrorHandling(async () => {
-      const prompt = this.createPrompt(text, targetLanguage, sourceLanguage);
-
       if (!this.client) {
         throw new Error('OpenAI client not initialized');
       }
@@ -74,24 +76,29 @@ export class OpenAIProvider extends BaseProvider<OpenAIProviderConfig, OpenAI> {
         throw new Error('Model is required');
       }
 
-      const response = await this.client.chat.completions.create({
-        model: this.config.model,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a professional translator. Provide only the translation without any explanations.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: this.config.temperature ?? ConstVariables.DEFAULT_OPENAI_TEMPERATURE,
-        max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_OPENAI_MAX_TOKENS
-      });
+      const model = this.config.model;
+      const client = this.client;
 
-      return response.choices[0]?.message?.content?.trim() ?? '';
+      return await this.runTranslation(texts, targetLanguage, sourceLanguage, async (prompt) => {
+        const response = await client.chat.completions.create({
+          model,
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are a professional translator. Provide only the translation without any explanations.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: this.config.temperature ?? ConstVariables.DEFAULT_OPENAI_TEMPERATURE,
+          max_tokens: this.config.maxTokens ?? ConstVariables.DEFAULT_OPENAI_MAX_TOKENS
+        });
+
+        return response.choices[0]?.message?.content?.trim() ?? '';
+      });
     });
   }
 

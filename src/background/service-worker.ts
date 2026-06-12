@@ -7,11 +7,13 @@ import type { Menus, Tabs } from 'webextension-polyfill';
 import { createProvider } from '../providers';
 import { getSettings, addToHistory } from '../utils/storage';
 import { getMessage } from '../utils/i18n';
+import { resolveProfile, resolveDispatch } from '../prompts';
+import type { DispatchMode } from '../prompts';
 import type { ProviderSettings } from '../types/settings';
 import type { BaseProvider } from '../providers/base-provider';
 
 type TranslatePayload = {
-  text: string;
+  texts: string[];
   targetLanguage?: string;
   sourceLanguage?: string;
   providerName?: string | null;
@@ -22,8 +24,13 @@ type ProviderRequestPayload = {
   config?: ProviderSettings;
 };
 
+type TranslationPlanPayload = {
+  providerName?: string | null;
+};
+
 type BackgroundRequest =
   | { action: 'translate'; data: TranslatePayload }
+  | { action: 'getTranslationPlan'; data?: TranslationPlanPayload }
   | { action: 'getSettings' }
   | { action: 'testProvider'; data: ProviderRequestPayload }
   | { action: 'getModels'; data: ProviderRequestPayload }
@@ -42,7 +49,11 @@ type BackgroundRequest =
   | { action: string; data?: unknown };
 
 type TranslateResponse =
-  | { success: true; translation: string; provider: string }
+  | { success: true; translations: string[]; provider: string }
+  | { success: false; error: string };
+
+type TranslationPlanResponse =
+  | { success: true; provider: string; model: string | null; dispatch: DispatchMode }
   | { success: false; error: string };
 
 type ProviderResponse = { success: true } | { success: false; error: string };
@@ -237,6 +248,8 @@ async function handleMessage(request: BackgroundRequest): Promise<unknown> {
   switch (action) {
     case 'translate':
       return await translateText((data || {}) as TranslatePayload);
+    case 'getTranslationPlan':
+      return await getTranslationPlan((data || {}) as TranslationPlanPayload);
     case 'getSettings':
       return await getSettings();
     case 'testProvider':
@@ -268,13 +281,13 @@ async function handleMessage(request: BackgroundRequest): Promise<unknown> {
  * Translate text using specified provider
  */
 async function translateText({
-  text,
+  texts,
   targetLanguage,
   sourceLanguage,
   providerName
 }: TranslatePayload): Promise<TranslateResponse> {
   try {
-    if (!text) {
+    if (!texts || texts.length === 0) {
       throw new Error(getMessage('errorNoTranslatableText'));
     }
     const settings = await getSettings();
@@ -300,16 +313,16 @@ async function translateText({
 
     // Create and initialize provider
     const providerInstance = createProvider(provider, providerConfig) as BaseProvider;
-    const translation = await providerInstance.translate(
-      text,
+    const translations = await providerInstance.translate(
+      texts,
       targetLanguage || settings.common.defaultTargetLanguage,
       sourceLanguage || 'auto'
     );
 
-    // Add to history
+    // Add to history (record the first item as a representative entry)
     await addToHistory({
-      original: text.substring(0, 100),
-      translated: translation.substring(0, 100),
+      original: (texts[0] ?? '').substring(0, 100),
+      translated: (translations[0] ?? '').substring(0, 100),
       provider,
       targetLanguage: targetLanguage || null,
       sourceLanguage: sourceLanguage || null
@@ -317,11 +330,48 @@ async function translateText({
 
     return {
       success: true,
-      translation,
+      translations,
       provider
     };
   } catch (error) {
     console.error('[Multi AI Translator] Translation error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+/**
+ * Resolve the translation plan (effective provider, model, and dispatch mode)
+ * for the page translator WITHOUT performing a translation or mutating state.
+ *
+ * The translator needs the dispatch mode up front so it can size its batches
+ * correctly: in 'single' mode each text is sent in its own request, so the
+ * translator builds one-text batches to keep progress accurate. Provider/model
+ * resolution mirrors translateText so the plan matches what translateText will
+ * actually use (minus the lastUsedProvider write, which only happens on a real
+ * translation).
+ */
+async function getTranslationPlan({
+  providerName
+}: TranslationPlanPayload): Promise<TranslationPlanResponse> {
+  try {
+    const settings = await getSettings();
+    const lastUsed = await getLastUsedProvider();
+    const requested = providerName || lastUsed || null;
+    const provider = resolveEnabledProvider(settings, requested);
+
+    if (!provider) {
+      throw new Error(getMessage('errorNoEnabledProviders'));
+    }
+
+    const model = settings.providers[provider]?.model ?? null;
+    const profile = resolveProfile(model ?? undefined);
+    const dispatch = resolveDispatch(profile, model ?? undefined);
+
+    return { success: true, provider, model, dispatch };
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error)
