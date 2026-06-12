@@ -33,40 +33,6 @@ export function buildHyMt2Prompt(sourceText: string, targetLanguage: string): st
 ${sourceText}`;
 }
 
-/**
- * Hy-MT2 control-token markers that some builds (notably the Ollama GGUF
- * conversions) leak into the output as plain text instead of treating as real
- * end/role tokens. When this happens the model keeps generating past the answer
- * — emitting a fake next turn or degenerating into repetition — so everything
- * from the first marker onward is junk and must be cut.
- *
- * Matches an opening `<` optionally followed by a full-width `｜` / half-width
- * `|` separator and then `hy` (covering `<｜hy_End▁of▁sentence｜>`,
- * `<｜hy_User｜>`, `<｜hy Input｜>`, `< | hy-Assistant | >`, etc.).
- */
-const HY_MT2_CONTROL_TOKEN = /<\s*[｜|]?\s*hy[\s\S]*$/i;
-
-/** Matches `<br>`, `<br/>`, `<br />` (any case) that the model emits for newlines. */
-const HY_MT2_BR_TAG = /<br\s*\/?>/gi;
-
-/**
- * Clean a single Hy-MT2 translation. Exported for testing.
- *
- * The model operates on plain text (we extract via `textContent`), but this
- * build tends to:
- *   1. leak control tokens (e.g. `<｜hy_End▁of▁sentence｜>`) and then keep
- *      generating garbage — everything from the first marker on is cut;
- *   2. render line breaks as literal `<br>` tags — since the result is written
- *      back as text, those would show up verbatim, so they are turned back into
- *      newlines.
- */
-export function cleanHyMt2Output(output: string = ''): string {
-  return output
-    .replace(HY_MT2_CONTROL_TOKEN, '')
-    .replace(HY_MT2_BR_TAG, '\n')
-    .trim();
-}
-
 export const hyMt2Profile: PromptProfile = {
   id: 'hy-mt2',
 
@@ -82,9 +48,7 @@ export const hyMt2Profile: PromptProfile = {
   },
 
   parseSingleResponse(output: string): string {
-    // Hy-MT2 returns only the translation, but some builds leak control tokens
-    // (e.g. `<｜hy_End▁of▁sentence｜>`) and then keep generating garbage. Cut
-    // everything from the first such marker and trim.
-    return cleanHyMt2Output(output);
+    // Hy-MT2 returns only the translation; trim surrounding whitespace.
+    return (output ?? '').trim();
   }
 };
