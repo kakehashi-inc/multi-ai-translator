@@ -134,15 +134,34 @@ export abstract class BaseProvider<
 
     // Single dispatch: one request per text. Empty / whitespace-only items are
     // passed through unchanged and never sent to the model.
+    //
+    // Fallback: a profile may offer several prompt variants (singleAttemptCount)
+    // and an isSingleResponseAcceptable check. We try variants in order and keep
+    // the first acceptable output; if none is acceptable we keep the last one
+    // (best effort — the profile/model may simply be unable to do better).
+    const attemptCount = Math.max(1, profile.singleAttemptCount ?? 1);
     const result = texts.slice();
     for (let i = 0; i < texts.length; i++) {
       const text = texts[i];
       if (!text || text.trim() === '') {
         continue;
       }
-      const prompt = profile.buildSinglePrompt(text, context);
-      const output = await send(prompt);
-      result[i] = profile.parseSingleResponse(output, text);
+      let output = '';
+      let usedAttempt = 0;
+      for (let attempt = 0; attempt < attemptCount; attempt++) {
+        usedAttempt = attempt;
+        const prompt = profile.buildSinglePrompt(text, context, attempt);
+        output = await send(prompt);
+        if (
+          !profile.isSingleResponseAcceptable ||
+          profile.isSingleResponseAcceptable(output, text, attempt)
+        ) {
+          break;
+        }
+      }
+      // Parse with the variant that actually produced the kept output, so
+      // variant-specific parsing (e.g. tag stripping) applies correctly.
+      result[i] = profile.parseSingleResponse(output, text, usedAttempt);
     }
     return result;
   }

@@ -78,11 +78,39 @@ export interface PromptProfile {
 
   // --- Single dispatch: one request per text (always required) ---
 
-  /** Build a prompt that translates exactly one text. */
-  buildSinglePrompt(text: string, context: PromptContext): string;
+  /**
+   * How many single-dispatch attempts this profile offers, i.e. the number of
+   * prompt variants `buildSinglePrompt` understands (attempt 0..count-1). The
+   * runner tries them in order, stopping at the first acceptable result. Omit
+   * (or 1) for no fallback. Profiles for fragile models (e.g. Hy-MT2) set >1 to
+   * provide alternative prompts that rescue cases the primary one fails — useful
+   * both for complementary prompts and for retrying non-deterministic failures.
+   */
+  readonly singleAttemptCount?: number;
 
-  /** Parse a single-text response into the translated string. */
-  parseSingleResponse(output: string, original: string): string;
+  /**
+   * Build a prompt that translates exactly one text. `attempt` selects the
+   * prompt variant (0 = primary). Profiles without fallbacks can ignore it.
+   */
+  buildSinglePrompt(text: string, context: PromptContext, attempt?: number): string;
+
+  /**
+   * Decide whether a single-text model output is acceptable. When it returns
+   * false and another attempt is available, the runner retries with the next
+   * prompt variant. Omit to never retry (every output accepted).
+   *
+   * `attempt` is the prompt-variant index that produced `output`, so the check
+   * can be specific to that variant (each prompt has its own failure modes —
+   * e.g. one leaks its own block labels, another leaks its wrapper tag).
+   */
+  isSingleResponseAcceptable?(output: string, original: string, attempt: number): boolean;
+
+  /**
+   * Parse a single-text response into the translated string. `attempt` is the
+   * prompt-variant index that produced `output`, so parsing can be specific to
+   * that variant (e.g. stripping a wrapper tag the variant's prompt used).
+   */
+  parseSingleResponse(output: string, original: string, attempt: number): string;
 }
 
 /**

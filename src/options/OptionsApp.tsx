@@ -493,8 +493,8 @@ export function OptionsApp() {
             >
               <MenuItem value="auto">{t('languageAutoDetect')}</MenuItem>
               {languages.map((lang) => (
-                <MenuItem key={lang.code} value={lang.code}>
-                  {lang.name}
+                <MenuItem key={lang.id} value={lang.id}>
+                  {lang.label}
                 </MenuItem>
               ))}
             </TextField>
@@ -505,8 +505,8 @@ export function OptionsApp() {
               onChange={(e) => updateCommonField('defaultTargetLanguage', e.target.value)}
             >
               {languages.map((lang) => (
-                <MenuItem key={lang.code} value={lang.code}>
-                  {lang.name}
+                <MenuItem key={lang.id} value={lang.id}>
+                  {lang.label}
                 </MenuItem>
               ))}
             </TextField>

@@ -313,8 +313,8 @@ export function PopupApp() {
           >
             <MenuItem value="auto">{t('languageAutoDetect')}</MenuItem>
             {languages.map((lang) => (
-              <MenuItem key={lang.code} value={lang.code}>
-                {lang.name}
+              <MenuItem key={lang.id} value={lang.id}>
+                {lang.label}
               </MenuItem>
             ))}
           </TextField>
@@ -326,8 +326,8 @@ export function PopupApp() {
             onChange={(e) => setTargetLanguage(e.target.value)}
           >
             {languages.map((lang) => (
-              <MenuItem key={lang.code} value={lang.code}>
-                {lang.name}
+              <MenuItem key={lang.id} value={lang.id}>
+                {lang.label}
               </MenuItem>
             ))}
           </TextField>

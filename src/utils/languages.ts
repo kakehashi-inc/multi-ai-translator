@@ -73,9 +73,14 @@ export function getLanguageById(id: string | undefined): LanguageDef | undefined
   return id ? BY_ID.get(id.toLowerCase()) : undefined;
 }
 
-/** Languages for UI pickers as `{ code: id, name: display }` (UI uses id as value). */
-export function getSupportedLanguages(): Array<{ code: string; name: string }> {
-  return LANGUAGES.map((lang) => ({ code: lang.id, name: lang.display }));
+/**
+ * Languages for UI pickers as `{ id, label }`. The whole system references a
+ * language by `id` (stored in settings, passed through messages, resolved to an
+ * English name only at prompt-build time), so the picker's value is the `id` and
+ * `label` is just what the user sees.
+ */
+export function getSupportedLanguages(): Array<{ id: string; label: string }> {
+  return LANGUAGES.map((lang) => ({ id: lang.id, label: lang.display }));
 }
 
 /**
